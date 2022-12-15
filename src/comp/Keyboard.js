@@ -1,4 +1,4 @@
-import { useRef, useContext } from "react";
+import { useContext } from "react";
 import { KeyboardRow } from "./KeyboardRow";
 import { KeyboardTile } from "./KeyboardTile";
 import { boardContext } from "../context/boardContext"

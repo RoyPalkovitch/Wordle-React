@@ -2,8 +2,6 @@ import React, { useContext } from "react";
 import { boardContext } from "../context/boardContext"
 import { TileContainer } from "./TileContainer";
 import { GameTile } from "./GameTile";
-import { KeyboardRow } from "./KeyboardRow";
-import { KeyboardTile } from "./KeyboardTile";
 import { useRef } from "react";
 import { KeyBoard } from "./Keyboard";
 

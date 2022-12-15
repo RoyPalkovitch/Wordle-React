@@ -1,9 +1,9 @@
 import { Header } from "./comp/Header";
 import { Outlet } from "react-router-dom";
 import { AuthContext } from "./context/authContext";
+import { useAuth } from "./hooks/useAuth";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./App.css";
-import { useAuth } from "./hooks/useAuth";
 
 function App() {
   const authApi = useAuth();
