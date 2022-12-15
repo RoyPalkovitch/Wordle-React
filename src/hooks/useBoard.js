@@ -43,10 +43,10 @@ export function useBoard() {
   }
 
   const createKeyboard = () => {
+    let letterCount = 0;
     if (keyBoardGrid.current.length === 3) {
       return;
     }
-    let letterCount = 0;
     for (let currentKeysRow = 0; currentKeysRow < 3; currentKeysRow++) {
       keyBoardGrid.current.push([]);
       for (let currentKeyPos = 0; currentKeyPos < 10; currentKeyPos++) {
@@ -54,17 +54,21 @@ export function useBoard() {
           letter: '',
           className: 'keyboard-tile '
         });
-        if (currentKeysRow === 2 && (currentKeyPos === 0 || currentKeyPos === 8)) {
-          keyBoardGrid.current[currentKeysRow].className += ' keyboard-tile-large ';
-          keyBoardGrid.current[currentKeysRow].letter = currentKeyPos === 8 ? 'Backspace' : 'Enter'
+        if (currentKeysRow === 2 && (currentKeyPos === 0 || currentKeyPos === 7)) {
+          keyBoardGrid.current[currentKeysRow][currentKeyPos].className += ' keyboard-tile-large ';
+          keyBoardGrid.current[currentKeysRow][currentKeyPos].letter = currentKeyPos === 7 ? 'Backspace' : 'Enter';
+          if (currentKeyPos === 7) {
+            break;
+          }
           continue;
+        } else {
+          if (letterCount < 26) {
+            keyBoardGrid.current[currentKeysRow][currentKeyPos].letter = letters[letterCount].toUpperCase();
+            letterCount++;
+            continue;
+          }
         }
-        if (letterCount < 26) {
-          keyBoardGrid.current[currentKeysRow].letter = letters[letterCount].toUpperCase();
-          letterCount++;
-          continue;
 
-        }
       }
     }
 
@@ -76,7 +80,7 @@ export function useBoard() {
     }
     const letter = e.key ? e.key : e.target.value;
     const currentFocusedRow = board[currentRow.current];
-    if (currentFocusedRow[currentCol.current + 1] === undefined && (letter === "Enter")) {
+    if (currentFocusedRow[currentCol.current + 1] === undefined && letter === "Enter") {
       if (currentFocusedRow[currentCol.current]) {
         searchCorrectWords(currentFocusedRow);
         currentRow.current++;
@@ -119,37 +123,40 @@ export function useBoard() {
 
   const searchCorrectWords = (currentFocusedRow) => {//search for correct words in the row
 
-    //let keyboard;
     for (let index = 0; index < currentFocusedRow.length; index++) {//checking each column in row
-      const val = currentFocusedRow[index].letter;
-      //keyboard = document.getElementById(val);
-      if (currentWord.includes(val)) {
-        if (currentWord[index] === val) {
+      const letter = currentFocusedRow[index].letter;
+      const keyboard = getKeyboardTile(letter)
+      if (currentWord.includes(letter)) {
+        if (currentWord[index] === letter) {
+          if (!keyboard.className.includes('correct')) {
+            keyboard.className += 'correct';
+          }
           currentFocusedRow[index].correct = 'correct';//correct place
-          //keyboard.classList.add('correct');
-          charCount[val] -= 1;
-          // if (charCount[val] !== 0) {
-          //   keyboard.classList.remove('correct');
-          //   keyboard.classList.add('exist');
-          // }
+
+          charCount[letter] -= 1;
+          if (charCount[letter] !== 0) {
+            keyboard.className.replace('correct', 'exist');
+          }
         }
-        //  else {
-        //   if (!keyboard.className.includes('correct')) {
-        //     keyboard.classList.add('exist');
-        //   }
-        // }
+        else {
+          if (!keyboard.className.includes('correct')) {
+            keyboard.className += 'exist';
+          }
+        }
       } else {
         currentFocusedRow[index].correct = 'wrong';
-        //keyboard.classList.add('wrong');
+        if (!keyboard.className.includes('wrong')) {
+          keyboard.className += 'wrong';
+        }
       }
     }
     //tried = countChar(currentWord) tried[val] > 0 && ;
     for (let index = 0; index < currentFocusedRow.length; index++) {//checking each column in row
-      const val = currentFocusedRow[index].letter;
-      if (currentWord.includes(val) && currentWord[index] !== val) {
-        if (!currentFocusedRow[index].correct !== 'correct' && charCount[val] >= 1) {
+      const letter = currentFocusedRow[index].letter;
+      if (currentWord.includes(letter) && currentWord[index] !== letter) {
+        if (!currentFocusedRow[index].correct !== 'correct' && charCount[letter] >= 1) {
           currentFocusedRow[index].correct = 'exist';//exist in the given word
-          charCount[val] -= 1;
+          charCount[letter] -= 1;
         }
         else {
           currentFocusedRow[index].correct = 'exist';
@@ -174,14 +181,29 @@ export function useBoard() {
     return false;
   }
 
+  const getKeyboardTile = (letter) => {
+    let keyboardTile;
+    for (let i = 0; i < keyBoardGrid.current.length; i++) {
+      for (let j = 0; j < keyBoardGrid.current[i].length; j++) {
+        if (letter === keyBoardGrid.current[i][j].letter) {
+          keyboardTile = keyBoardGrid.current[i][j];
+          break;
+        }
+      }
+      if (keyboardTile) {
+        break;
+      }
+    }
+    return keyboardTile
+  }
 
   return {
     board,
     currentRow,
     currentCol,
     letters,
-    setBoard,
     keyBoardGrid,
+    setBoard,
     handleKeyDown
   }
 
