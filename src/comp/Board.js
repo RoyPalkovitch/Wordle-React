@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { boardContext } from "../context/boardContext"
-import { TileContainer } from "./tileContainer";
+import { GameTileContainer } from "./gameTileContainer";
 import { GameTile } from "./gameTile";
 
 export function Board() {
@@ -9,7 +9,7 @@ export function Board() {
     <section className="guess-container">
       {board.map((container, i) => {
         return (
-          <TileContainer key={`row-${i}`} container={container}>
+          <GameTileContainer key={`row-${i}`} container={container}>
             {container.map((gameTile, j) => {
               return (
                 <GameTile key={`row-${i}-col-${j}`} letterPos={gameTile}
@@ -18,7 +18,7 @@ export function Board() {
                       "col game-tile focus " : "col game-tile " + (gameTile.correct)} />
               )
             })}
-          </TileContainer>)
+          </GameTileContainer>)
       })}
     </section>
   )
