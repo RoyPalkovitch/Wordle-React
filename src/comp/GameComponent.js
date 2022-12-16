@@ -1,5 +1,6 @@
-import { Board } from "../comp/Board";
-import { Popup } from "../comp/Popup";
+import { Board } from "./board";
+import { Keyboard } from "./keyboard";
+import { EndGamePopup } from "./endGamePopup";
 import { useBoard } from "../hooks/useBoard";
 import { boardContext } from "../context/boardContext";
 
@@ -8,8 +9,12 @@ export function Game() {
 
   return (
     <boardContext.Provider value={boardApi}>
-      <Board />
-      <Popup />
+      <main id="main">
+        <Board />
+        <Keyboard />
+        <EndGamePopup />
+      </main>
+
     </boardContext.Provider>
   )
 }

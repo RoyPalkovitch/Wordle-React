@@ -1,4 +1,4 @@
-import { Header } from "./comp/Header";
+import { Nav } from "./comp/nav";
 import { Outlet } from "react-router-dom";
 import { AuthContext } from "./context/authContext";
 import { useAuth } from "./hooks/useAuth";
@@ -10,7 +10,7 @@ function App() {
   return (
     <>
       <AuthContext.Provider value={authApi}>
-        <Header />
+        <Nav />
         <Outlet />
       </AuthContext.Provider>
     </>

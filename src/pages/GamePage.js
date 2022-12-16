@@ -1,4 +1,4 @@
-import { Game } from "../comp/GameComponent";
+import { Game } from "../comp/gameComponent";
 
 export function GamePage() {
 

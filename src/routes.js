@@ -1,11 +1,10 @@
-import { createBrowserRouter } from "react-router-dom";
-
-import { Home } from './pages/Home'
-import App from "./App";
 import React from "react";
+import App from "./App";
+import { createBrowserRouter } from "react-router-dom";
+import { HomePage } from './pages/HomePage'
+import { RegisterPage } from "./pages/RegisterPage";
+import { SignInPage } from "./pages/SignInPage";
 import { GamePage } from "./pages/GamePage";
-import { SignIn } from "./pages/SignIn";
-import { Register } from "./pages/Register";
 
 export const router = createBrowserRouter([
   {
@@ -13,7 +12,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <Home />
+        element: <HomePage />
       },
       {
         path: '/game',
@@ -21,11 +20,11 @@ export const router = createBrowserRouter([
       },
       {
         path: '/sign-in',
-        element: <SignIn />
+        element: <SignInPage />
       },
       {
         path: '/register',
-        element: <Register />
+        element: <RegisterPage />
       }
     ]
   }

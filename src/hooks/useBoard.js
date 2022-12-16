@@ -7,10 +7,10 @@ export function useBoard() {
   const keyBoardGrid = useRef([]);
   const currentWord = "event".toUpperCase();
   const letters = "qwertyuiopasdfghjklzxcvbnm";
-  const charCount = countChar(currentWord);
+  const charCount = useRef(countCharsInWord(currentWord));
 
 
-  function countChar(currentWord) {
+  function countCharsInWord(currentWord) {
     const count = {};
     for (let i = 0; i < currentWord.length; i++) {
       if (count[currentWord[i]])
@@ -80,11 +80,12 @@ export function useBoard() {
     }
     const letter = e.key ? e.key : e.target.value;
     const currentFocusedRow = board[currentRow.current];
-    if (currentFocusedRow[currentCol.current + 1] === undefined && letter === "Enter") {
+    if (currentFocusedRow.length - 1 === currentCol.current && letter === "Enter") {
       if (currentFocusedRow[currentCol.current]) {
         searchCorrectWords(currentFocusedRow);
         currentRow.current++;
         currentCol.current = 0;
+        charCount.current = countCharsInWord(currentWord);
       }
     }
     else if (letter === "Backspace") {
@@ -102,7 +103,6 @@ export function useBoard() {
     if (currentCol.current) {
       currentCol.current--;
     }
-    setBoard([...board]);
   }
 
   const write = (letter, currentFocusedRow) => {
@@ -133,8 +133,8 @@ export function useBoard() {
           }
           currentFocusedRow[index].correct = 'correct';//correct place
 
-          charCount[letter] -= 1;
-          if (charCount[letter] !== 0) {
+          charCount.current[letter] -= 1;
+          if (charCount.current[letter] !== 0) {
             keyboard.className.replace('correct', 'exist');
           }
         }
@@ -150,16 +150,16 @@ export function useBoard() {
         }
       }
     }
-    //tried = countChar(currentWord) tried[val] > 0 && ;
+
     for (let index = 0; index < currentFocusedRow.length; index++) {//checking each column in row
       const letter = currentFocusedRow[index].letter;
       if (currentWord.includes(letter) && currentWord[index] !== letter) {
-        if (!currentFocusedRow[index].correct !== 'correct' && charCount[letter] >= 1) {
+        if (!currentFocusedRow[index].correct !== 'correct' && charCount.current[letter] >= 1) {
           currentFocusedRow[index].correct = 'exist';//exist in the given word
-          charCount[letter] -= 1;
+          charCount.current[letter] -= 1;
         }
         else {
-          currentFocusedRow[index].correct = 'exist';
+          currentFocusedRow[index].correct = 'wrong';
         }
       }
     }
