@@ -23,36 +23,3 @@ export function Keyboard() {
     </section>
   )
 }
-
-
-// <section id="keyboard">
-//         {[...Array(3).keys()].map((currentKeysRow) => {
-//           return <KeyboardRow key={`row-${currentKeysRow}`} currentKeysRow={currentKeysRow}>
-//             {[...Array(10).keys()].map((currentKeyPos) => {
-//               if ((currentKeysRow === 1 && currentKeyPos === 9) || (currentKeysRow === 2 && currentKeyPos === 9)) {
-//                 return null
-//               }
-//               return <KeyboardTile key={`row-${currentKeysRow}-col-${currentKeyPos}`}
-//                 currentKeysRow={currentKeysRow}
-//                 currentKeyPos={currentKeyPos}
-//                 lettersCountRef={lettersCountRef} />
-//             })}
-
-//           </KeyboardRow>
-//         })}
-//       </section>
-
-
-// {[...Array(3).keys()].map((currentKeysRow) => {
-//   return <KeyboardRow key={`row-${currentKeysRow}`} currentKeysRow={currentKeysRow}>
-//     {[...Array(10).keys()].map((currentKeyPos) => {
-//       if ((currentKeysRow === 1 && currentKeyPos === 9) || (currentKeysRow === 2 && currentKeyPos === 9)) {
-//         return null
-//       }
-//       return <KeyboardTile key={`row-${currentKeysRow}-col-${currentKeyPos}`}
-//         currentKeysRow={currentKeysRow}
-//         currentKeyPos={currentKeyPos}
-//         lettersCountRef={lettersCountRef} />
-//     })}
-
-//   </KeyboardRow>

@@ -6,6 +6,6 @@ export function KeyboardTile({ currentKey }) {
   const { handleKeyDown } = useContext(boardContext);
 
   return (
-    <button className={currentKey.className} value={currentKey.letter} onClick={handleKeyDown}>{currentKey.letter}</button>
+    <button className={currentKey.classState} value={currentKey.letter} onClick={handleKeyDown}>{currentKey.letter}</button>
   )
 }

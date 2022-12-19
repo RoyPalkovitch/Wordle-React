@@ -12,9 +12,8 @@ export function Game() {
       <main id="main">
         <Board />
         <Keyboard />
-        <EndGamePopup />
       </main>
-
+      <EndGamePopup />
     </boardContext.Provider>
   )
 }

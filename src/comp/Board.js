@@ -15,7 +15,7 @@ export function Board() {
                 <GameTile key={`row-${i}-col-${j}`} letterPos={gameTile}
                   classes={
                     (currentRow.current === i && currentCol.current === j) ?
-                      "col game-tile focus " : "col game-tile " + (gameTile.correct)} />
+                      "col game-tile focus " : "col game-tile " + (gameTile.classState)} />
               )
             })}
           </GameTileContainer>)

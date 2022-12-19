@@ -2,33 +2,27 @@ import { useState, useEffect, useRef } from "react";
 
 export function useBoard() {
   const [board, setBoard] = useState([]);
+  const [showGameEndPopup, setGameEndPopup] = useState(false);
+  const [resetGame, setResetGame] = useState(false);
+
   const currentRow = useRef(0);
   const currentCol = useRef(0);
   const keyBoardGrid = useRef([]);
+  const winOrLose = useRef("");
+
   const currentWord = "event".toUpperCase();
   const letters = "qwertyuiopasdfghjklzxcvbnm";
   const charCount = useRef(countCharsInWord(currentWord));
 
-
-  function countCharsInWord(currentWord) {
-    const count = {};
-    for (let i = 0; i < currentWord.length; i++) {
-      if (count[currentWord[i]])
-        count[currentWord[i]] += 1;
-      else {
-        count[currentWord[i]] = 1;
-      }
-    }
-    return count;
-  }
-
   useEffect(() => {
+
+    setGame()
     document.addEventListener("keydown", handleKeyDown);
-    createBoard();
-    createKeyboard();
-    setBoard([...board]);
-    //eslint-disable-next-line
-  }, []);
+    return () =>
+      document.removeEventListener('keydown', handleKeyDown);
+    // eslint-disable-next-line 
+  }, [resetGame]);
+
 
   const createBoard = () => {
     if (board.length === 5) {
@@ -37,9 +31,10 @@ export function useBoard() {
     for (let i = 0; i < 5; i++) {
       board.push([]);
       for (let j = 0; j < 5; j++) {
-        board[i].push({ correct: '', letter: '' });
+        board[i].push({ classState: '', letter: '' });
       }
     }
+
   }
 
   const createKeyboard = () => {
@@ -50,22 +45,23 @@ export function useBoard() {
     for (let currentKeysRow = 0; currentKeysRow < 3; currentKeysRow++) {
       keyBoardGrid.current.push([]);
       for (let currentKeyPos = 0; currentKeyPos < 10; currentKeyPos++) {
+        if (currentKeysRow === 1 && currentKeyPos === 9) {
+          continue;
+        }
         keyBoardGrid.current[currentKeysRow].push({
           letter: '',
-          className: 'keyboard-tile '
+          classState: 'keyboard-tile '
         });
         if (currentKeysRow === 2 && (currentKeyPos === 0 || currentKeyPos === 7)) {
-          keyBoardGrid.current[currentKeysRow][currentKeyPos].className += ' keyboard-tile-large ';
+          keyBoardGrid.current[currentKeysRow][currentKeyPos].classState += ' keyboard-tile-large ';
           keyBoardGrid.current[currentKeysRow][currentKeyPos].letter = currentKeyPos === 7 ? 'Backspace' : 'Enter';
           if (currentKeyPos === 7) {
             break;
           }
-          continue;
         } else {
           if (letterCount < 26) {
             keyBoardGrid.current[currentKeysRow][currentKeyPos].letter = letters[letterCount].toUpperCase();
             letterCount++;
-            continue;
           }
         }
 
@@ -86,16 +82,23 @@ export function useBoard() {
         currentRow.current++;
         currentCol.current = 0;
         charCount.current = countCharsInWord(currentWord);
+        if (checkWin(currentFocusedRow)) {
+          winOrLose.current = 'Win';
+          setGameEndPopup(true);
+          return
+        }
       }
-    }
-    else if (letter === "Backspace") {
-      deleteWord(currentFocusedRow);
-    }
-    else {
-      write(letter, currentFocusedRow);
+    } else {
+      if (letter === "Backspace") {
+        deleteWord(currentFocusedRow);
+      } else {
+        write(letter, currentFocusedRow);
 
+      }
+      setBoard([...board]);
     }
-    setBoard([...board]);
+
+
   }
 
   const deleteWord = (currentFocusedRow) => {
@@ -128,25 +131,25 @@ export function useBoard() {
       const keyboard = getKeyboardTile(letter)
       if (currentWord.includes(letter)) {
         if (currentWord[index] === letter) {
-          if (!keyboard.className.includes('correct')) {
-            keyboard.className += 'correct';
+          if (!keyboard.classState.includes('correct')) {
+            keyboard.classState += 'correct';
           }
-          currentFocusedRow[index].correct = 'correct';//correct place
+          currentFocusedRow[index].classState = 'correct';//correct place
 
           charCount.current[letter] -= 1;
           if (charCount.current[letter] !== 0) {
-            keyboard.className.replace('correct', 'exist');
+            keyboard.classState.replace('correct', 'exist');
           }
         }
         else {
-          if (!keyboard.className.includes('correct')) {
-            keyboard.className += 'exist';
+          if (!keyboard.classState.includes('correct')) {
+            keyboard.classState += 'exist';
           }
         }
       } else {
-        currentFocusedRow[index].correct = 'wrong';
-        if (!keyboard.className.includes('wrong')) {
-          keyboard.className += 'wrong';
+        currentFocusedRow[index].classState = 'wrong';
+        if (!keyboard.classState.includes('wrong')) {
+          keyboard.classState += 'wrong';
         }
       }
     }
@@ -154,31 +157,36 @@ export function useBoard() {
     for (let index = 0; index < currentFocusedRow.length; index++) {//checking each column in row
       const letter = currentFocusedRow[index].letter;
       if (currentWord.includes(letter) && currentWord[index] !== letter) {
-        if (!currentFocusedRow[index].correct !== 'correct' && charCount.current[letter] >= 1) {
-          currentFocusedRow[index].correct = 'exist';//exist in the given word
+        if (!currentFocusedRow[index].classState !== 'correct' && charCount.current[letter] >= 1) {
+          currentFocusedRow[index].classState = 'exist';//exist in the given word
           charCount.current[letter] -= 1;
         }
         else {
-          currentFocusedRow[index].correct = 'wrong';
+          currentFocusedRow[index].classState = 'wrong';
         }
       }
     }
 
-    checkWin(currentFocusedRow);
-
   }
 
   const checkWin = (currentFocusedRow) => {//check if all the word are correct and in order
-    let win = ''
-    for (let i = 0; i < currentFocusedRow.length; i++) {
-      win += currentFocusedRow[i].letter;
-    }
+    const win = currentFocusedRow.map(col => (col.letter)).join('');
     if (win === currentWord) {
-      //showPopup(row, 'You Win!');
-      alert("winner");
       return true;
     }
     return false;
+  }
+
+  function countCharsInWord(currentWord) {
+    const count = {};
+    for (let i = 0; i < currentWord.length; i++) {
+      if (count[currentWord[i]])
+        count[currentWord[i]] += 1;
+      else {
+        count[currentWord[i]] = 1;
+      }
+    }
+    return count;
   }
 
   const getKeyboardTile = (letter) => {
@@ -197,13 +205,30 @@ export function useBoard() {
     return keyboardTile
   }
 
+  const setGame = () => {
+    board.splice(0);
+    keyBoardGrid.current = [];
+    currentRow.current = 0;
+    currentCol.current = 0;
+    winOrLose.current = '';
+    charCount.current = countCharsInWord(currentWord);
+    createKeyboard();
+    createBoard();
+    setBoard([...board]);
+    setGameEndPopup(false);
+    setResetGame(false);
+  }
+
+
   return {
     board,
     currentRow,
     currentCol,
     letters,
     keyBoardGrid,
-    setBoard,
+    showGameEndPopup,
+    winOrLose,
+    setResetGame,
     handleKeyDown
   }
 
