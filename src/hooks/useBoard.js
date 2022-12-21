@@ -95,6 +95,9 @@ export function useBoard() {
         write(letter, currentFocusedRow);
 
       }
+      if (currentCol.current === 4) {
+        console.log("Done");
+      }
       setBoard([...board]);
     }
 
