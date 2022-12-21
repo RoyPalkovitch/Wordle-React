@@ -1,13 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 
 export function useBoard() {
-  const [board, setBoard] = useState([]);
+  const [board, setBoard] = useState([[{ classState: '', letter: '' }]]);
   const [showGameEndPopup, setGameEndPopup] = useState(false);
   const [resetGame, setResetGame] = useState(false);
 
   const currentRow = useRef(0);
   const currentCol = useRef(0);
-  const keyBoardGrid = useRef([]);
+  const keyBoardGrid = useRef([[{
+    letter: '',
+    classState: 'keyboard-tile '
+  }]]);
   const winOrLose = useRef("");
 
   const currentWord = "event".toUpperCase();
@@ -70,11 +73,11 @@ export function useBoard() {
 
   }
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: KeyboardEvent | MouseEvent) => {
     if (currentRow.current === board.length) {
       return;
     }
-    const letter = e.key ? e.key : e.target.value;
+    const letter: string = (e as KeyboardEvent).key ? (e as KeyboardEvent).key : (e.target as HTMLButtonElement).value;
     const currentFocusedRow = board[currentRow.current];
     if (currentFocusedRow.length - 1 === currentCol.current && letter === "Enter") {
       if (currentFocusedRow[currentCol.current]) {
@@ -95,23 +98,29 @@ export function useBoard() {
         write(letter, currentFocusedRow);
 
       }
-      if (currentCol.current === 4) {
-        console.log("Done");
-      }
-      setBoard([...board]);
     }
+    if (currentCol.current === 4) {
+      console.log("Done");
+    }
+    setBoard([...board]);
 
 
   }
 
-  const deleteWord = (currentFocusedRow) => {
+  const deleteWord = (currentFocusedRow: {
+    classState: string;
+    letter: string;
+  }[]) => {
     currentFocusedRow[currentCol.current].letter = '';
     if (currentCol.current) {
       currentCol.current--;
     }
   }
 
-  const write = (letter, currentFocusedRow) => {
+  const write = (letter: string, currentFocusedRow: {
+    classState: string;
+    letter: string;
+  }[]) => {
     if (!letters.includes(letter.toLowerCase())) {
       return;
     }
@@ -127,7 +136,10 @@ export function useBoard() {
     }
   }
 
-  const searchCorrectWords = (currentFocusedRow) => {//search for correct words in the row
+  const searchCorrectWords = (currentFocusedRow: {
+    classState: string;
+    letter: string;
+  }[]) => {//search for correct words in the row
 
     for (let index = 0; index < currentFocusedRow.length; index++) {//checking each column in row
       const letter = currentFocusedRow[index].letter;
@@ -160,7 +172,7 @@ export function useBoard() {
     for (let index = 0; index < currentFocusedRow.length; index++) {//checking each column in row
       const letter = currentFocusedRow[index].letter;
       if (currentWord.includes(letter) && currentWord[index] !== letter) {
-        if (!currentFocusedRow[index].classState !== 'correct' && charCount.current[letter] >= 1) {
+        if (currentFocusedRow[index].classState !== 'correct' && charCount.current[letter] >= 1) {
           currentFocusedRow[index].classState = 'exist';//exist in the given word
           charCount.current[letter] -= 1;
         }
@@ -172,7 +184,7 @@ export function useBoard() {
 
   }
 
-  const checkWin = (currentFocusedRow) => {//check if all the word are correct and in order
+  const checkWin = (currentFocusedRow: { classState: string; letter: string; }[]): boolean => {//check if all the word are correct and in order
     const win = currentFocusedRow.map(col => (col.letter)).join('');
     if (win === currentWord) {
       return true;
@@ -180,8 +192,8 @@ export function useBoard() {
     return false;
   }
 
-  function countCharsInWord(currentWord) {
-    const count = {};
+  function countCharsInWord(currentWord: string): { [word: string]: number } {
+    const count: { [word: string]: number } = {};
     for (let i = 0; i < currentWord.length; i++) {
       if (count[currentWord[i]])
         count[currentWord[i]] += 1;
@@ -192,12 +204,17 @@ export function useBoard() {
     return count;
   }
 
-  const getKeyboardTile = (letter) => {
-    let keyboardTile;
+  const getKeyboardTile = (letter: string): { letter: string; classState: string; } => {
+    const keyboardTile: { letter: string; classState: string; } =
+    {
+      letter: '',
+      classState: ''
+    }
     for (let i = 0; i < keyBoardGrid.current.length; i++) {
       for (let j = 0; j < keyBoardGrid.current[i].length; j++) {
         if (letter === keyBoardGrid.current[i][j].letter) {
-          keyboardTile = keyBoardGrid.current[i][j];
+          keyboardTile.letter = keyBoardGrid.current[i][j].letter;
+          keyboardTile.classState = keyBoardGrid.current[i][j].classState;
           break;
         }
       }
