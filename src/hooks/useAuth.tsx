@@ -1,12 +1,13 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
+
 export function useAuth() {
   const [currentUser, setCurrentUser] = useState(null);
-  const fakeDB = useRef([]);
+  const fakeDB = useRef([{ userName: '', password: '' }]);
   const navigate = useNavigate();
 
-  const login = (userName, password) => {
+  const login = (userName: string, password: string) => {
     if (checkDB(userName, password)) {
       fetch('https://jsonplaceholder.typicode.com/users/1')
         .then(response => response.json())
@@ -19,7 +20,7 @@ export function useAuth() {
     }
   }
 
-  const register = (userName, password) => {
+  const register = (userName: string, password: string) => {
     if (!checkDB(userName, password)) {
       fakeDB.current.push({ userName, password });
       login(userName, password);
@@ -29,7 +30,7 @@ export function useAuth() {
     }
   }
 
-  const checkDB = (userName, password) => {
+  const checkDB = (userName: string, password: string): boolean => {
     let canLogin = false;
 
     fakeDB.current.forEach(user => {
