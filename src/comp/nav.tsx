@@ -10,21 +10,29 @@ import Navbar from 'react-bootstrap/Navbar';
 
 export function Nav() {
   let navigate = useNavigate();
-  const { currentUser, setCurrentUser } = useContext(AuthContext);
+
+  const [currentUser, setCurrentUser] = [useContext(AuthContext)?.currentUser, useContext(AuthContext)?.setCurrentUser];
   const [show, setShow] = useState(false);
   const handleShow = () => setShow(true);
+
+  const handleLogout = () => {
+    if (setCurrentUser)
+      setCurrentUser({ name: '' })
+  }
+
+
   return (
     <Navbar>
       <Container>
         <Navbar.Brand><Link className="text-decoration-none text-dark" to="/">Wordle</Link></Navbar.Brand>
         <Navbar.Toggle />
         <Navbar.Collapse className="justify-content-end ">
-          {currentUser ? (
+          {currentUser?.name ? (
             <>
               <Navbar.Text className="px-5">
                 Welcome: {currentUser.name}
               </Navbar.Text>
-              <Button onClick={() => setCurrentUser(null)}>Logout</Button>
+              <Button onClick={handleLogout}>Logout</Button>
             </>
           ) :
             (

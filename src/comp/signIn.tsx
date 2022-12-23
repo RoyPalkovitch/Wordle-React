@@ -3,19 +3,24 @@ import { AuthContext } from "../context/authContext";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
-export function Register() {
-  const emailInputRef = useRef();
-  const passwordInputRef = useRef();
-  const { register } = useContext(AuthContext);
 
-  const handleRegister = () => {
-    register(emailInputRef.current.value, passwordInputRef.current.value);
-    //setstate error
+
+
+export function SignIn() {
+  const login = useContext(AuthContext)?.login;
+  const emailInputRef = useRef<HTMLInputElement>(null);
+  const passwordInputRef = useRef<HTMLInputElement>(null);
+
+
+  const handleLogin = () => {
+    if (emailInputRef.current && passwordInputRef.current && login) {
+      login(emailInputRef.current.value, passwordInputRef.current.value);
+    }
   }
 
   return (
     <Form className="w-50 mx-auto">
-      <h3 className="text-center">Register</h3>
+      <h3 className="text-center">Sign In</h3>
       <Form.Group className="mb-3" controlId="formBasicEmail">
         <Form.Label>Email address</Form.Label>
         <Form.Control type="email" placeholder="Enter email" ref={emailInputRef} />
@@ -29,7 +34,7 @@ export function Register() {
         <Form.Control type="password" placeholder="Password" ref={passwordInputRef} />
       </Form.Group>
 
-      <Button variant="primary" type="submit" onClick={handleRegister}>
+      <Button variant="primary" type="submit" onClick={handleLogin}>
         Submit
       </Button>
     </Form>

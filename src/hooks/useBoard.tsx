@@ -1,6 +1,29 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, MouseEvent } from "react";
 
-export function useBoard() {
+type gameTile = {
+  classState: string,
+  letter: string
+}
+
+export interface IBoard {
+  board: {
+    classState: string;
+    letter: string;
+  }[][],
+  currentRow: React.MutableRefObject<number>,
+  currentCol: React.MutableRefObject<number>,
+  letters: string,
+  keyBoardGrid: React.MutableRefObject<{
+    letter: string;
+    classState: string;
+  }[][]>,
+  showGameEndPopup: boolean,
+  winOrLose: React.MutableRefObject<string>,
+  setResetGame: React.Dispatch<React.SetStateAction<boolean>>,
+  handleKeyDown: (e: KeyboardEvent | MouseEvent<HTMLButtonElement>) => void
+}
+
+export function useBoard(): IBoard {
   const [board, setBoard] = useState([[{ classState: '', letter: '' }]]);
   const [showGameEndPopup, setGameEndPopup] = useState(false);
   const [resetGame, setResetGame] = useState(false);
@@ -72,13 +95,13 @@ export function useBoard() {
     }
 
   }
-
-  const handleKeyDown = (e: KeyboardEvent | MouseEvent) => {
+  const handleKeyDown = (e: KeyboardEvent | MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     if (currentRow.current === board.length) {
       return;
     }
-    const letter: string = (e as KeyboardEvent).key ? (e as KeyboardEvent).key : (e.target as HTMLButtonElement).value;
-    const currentFocusedRow = board[currentRow.current];
+    const letter: string = (e as KeyboardEvent).key ? (e as KeyboardEvent).key : (e as MouseEvent<HTMLButtonElement>).currentTarget.value;
+    const currentFocusedRow: gameTile[] = board[currentRow.current];
     if (currentFocusedRow.length - 1 === currentCol.current && letter === "Enter") {
       if (currentFocusedRow[currentCol.current]) {
         searchCorrectWords(currentFocusedRow);
@@ -107,20 +130,14 @@ export function useBoard() {
 
   }
 
-  const deleteWord = (currentFocusedRow: {
-    classState: string;
-    letter: string;
-  }[]) => {
+  const deleteWord = (currentFocusedRow: gameTile[]) => {
     currentFocusedRow[currentCol.current].letter = '';
     if (currentCol.current) {
       currentCol.current--;
     }
   }
 
-  const write = (letter: string, currentFocusedRow: {
-    classState: string;
-    letter: string;
-  }[]) => {
+  const write = (letter: string, currentFocusedRow: gameTile[]) => {
     if (!letters.includes(letter.toLowerCase())) {
       return;
     }
@@ -136,10 +153,7 @@ export function useBoard() {
     }
   }
 
-  const searchCorrectWords = (currentFocusedRow: {
-    classState: string;
-    letter: string;
-  }[]) => {//search for correct words in the row
+  const searchCorrectWords = (currentFocusedRow: gameTile[]) => {//search for correct words in the row
 
     for (let index = 0; index < currentFocusedRow.length; index++) {//checking each column in row
       const letter = currentFocusedRow[index].letter;
@@ -184,7 +198,7 @@ export function useBoard() {
 
   }
 
-  const checkWin = (currentFocusedRow: { classState: string; letter: string; }[]): boolean => {//check if all the word are correct and in order
+  const checkWin = (currentFocusedRow: gameTile[]): boolean => {//check if all the word are correct and in order
     const win = currentFocusedRow.map(col => (col.letter)).join('');
     if (win === currentWord) {
       return true;
@@ -204,7 +218,7 @@ export function useBoard() {
     return count;
   }
 
-  const getKeyboardTile = (letter: string): { letter: string; classState: string; } => {
+  const getKeyboardTile = (letter: string): gameTile => {
     const keyboardTile: { letter: string; classState: string; } =
     {
       letter: '',

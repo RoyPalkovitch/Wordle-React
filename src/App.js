@@ -6,10 +6,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import "./App.css";
 
 function App() {
-  const authApi = useAuth();
+  const authAPI = useAuth();
+
   return (
     <>
-      <AuthContext.Provider value={authApi}>
+      <AuthContext.Provider value={authAPI}>
         <Nav />
         <Outlet />
       </AuthContext.Provider>

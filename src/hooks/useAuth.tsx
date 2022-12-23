@@ -1,9 +1,21 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
+interface User {
+  name: string
+}
 
-export function useAuth() {
-  const [currentUser, setCurrentUser] = useState(null);
+
+export interface IAuth {
+  currentUser: User,
+  setCurrentUser: React.Dispatch<React.SetStateAction<{ name: string; }>>,
+  login: (userName: string, password: string) => void,
+  register: (userName: string, password: string) => void
+}
+
+
+export function useAuth(): IAuth {
+  const [currentUser, setCurrentUser] = useState({ name: '' });
   const fakeDB = useRef([{ userName: '', password: '' }]);
   const navigate = useNavigate();
 
@@ -36,7 +48,6 @@ export function useAuth() {
     fakeDB.current.forEach(user => {
       if (user.userName === userName && user.password === password) {
         canLogin = true
-
       }
     });
 
@@ -44,7 +55,6 @@ export function useAuth() {
   }
 
   return ({
-    fakeDB,
     currentUser,
     setCurrentUser,
     register,

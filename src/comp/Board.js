@@ -3,7 +3,9 @@ import { boardContext } from "../context/boardContext"
 import { GameTileContainer } from "./gameTileContainer";
 import { GameTile } from "./gameTile";
 
+
 export function Board() {
+
   const { board, currentRow, currentCol } = useContext(boardContext);
   return (
     <section className="guess-container">
