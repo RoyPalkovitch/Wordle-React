@@ -157,27 +157,31 @@ export function useBoard(): IBoard {
 
     for (let index = 0; index < currentFocusedRow.length; index++) {//checking each column in row
       const letter = currentFocusedRow[index].letter;
-      const keyboard = getKeyboardTile(letter)
+      const keyboard = getKeyboardTile(letter);
+      if (!keyboard) {
+        return;
+      }
+
       if (currentWord.includes(letter)) {
         if (currentWord[index] === letter) {
-          if (!keyboard.classState.includes('correct')) {
-            keyboard.classState += 'correct';
+          charCount.current[letter] -= 1;
+          if (charCount.current[letter] === 0) {
+            keyboard.classState = 'keyboard-tile correct';
+          }
+          if (charCount.current[letter] !== 0 && keyboard.classState === 'keyboard-tile ') {
+            keyboard.classState += 'exist';
           }
           currentFocusedRow[index].classState = 'correct';//correct place
 
-          charCount.current[letter] -= 1;
-          if (charCount.current[letter] !== 0) {
-            keyboard.classState.replace('correct', 'exist');
-          }
         }
         else {
-          if (!keyboard.classState.includes('correct')) {
+          if (keyboard.classState === 'keyboard-tile ') {
             keyboard.classState += 'exist';
           }
         }
       } else {
         currentFocusedRow[index].classState = 'wrong';
-        if (!keyboard.classState.includes('wrong')) {
+        if ((keyboard.classState === 'keyboard-tile ')) {
           keyboard.classState += 'wrong';
         }
       }
@@ -218,25 +222,15 @@ export function useBoard(): IBoard {
     return count;
   }
 
-  const getKeyboardTile = (letter: string): gameTile => {
-    const keyboardTile: { letter: string; classState: string; } =
-    {
-      letter: '',
-      classState: ''
-    }
+  const getKeyboardTile = (letter: string): gameTile | void => {
     for (let i = 0; i < keyBoardGrid.current.length; i++) {
       for (let j = 0; j < keyBoardGrid.current[i].length; j++) {
         if (letter === keyBoardGrid.current[i][j].letter) {
-          keyboardTile.letter = keyBoardGrid.current[i][j].letter;
-          keyboardTile.classState = keyBoardGrid.current[i][j].classState;
-          break;
+
+          return keyBoardGrid.current[i][j];
         }
       }
-      if (keyboardTile) {
-        break;
-      }
     }
-    return keyboardTile
   }
 
   const setGame = () => {
