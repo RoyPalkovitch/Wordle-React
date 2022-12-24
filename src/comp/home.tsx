@@ -3,9 +3,9 @@ import { useContext } from "react";
 import { AuthContext } from "../context/authContext"
 import { useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
-
+import { User } from "../hooks/useAuth";
 export function Home() {
-  const { currentUser } = useContext(AuthContext);
+  const currentUser: User | undefined = useContext(AuthContext)?.currentUser;
   let navigate = useNavigate();
 
   return (

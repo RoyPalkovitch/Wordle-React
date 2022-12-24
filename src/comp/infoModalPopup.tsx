@@ -1,12 +1,15 @@
 import Modal from 'react-bootstrap/Modal';
 
+interface Iprops {
+  show: boolean,
+  onHide: () => void
+}
 
-
-export function InfoModalPopup(props) {
+export function InfoModalPopup(props: Iprops) {
   return (
     <Modal
       {...props}
-      size="md"
+      size="lg"
       aria-labelledby="contained-modal-title-vcenter"
       centered>
       <Modal.Header closeButton >
