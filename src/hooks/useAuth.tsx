@@ -6,7 +6,7 @@ export type User = {
 }
 
 
-export interface IAuth {
+export type TAuth = {
   currentUser: User,
   setCurrentUser: React.Dispatch<React.SetStateAction<{ name: string; }>>,
   login: (userName: string, password: string) => void,
@@ -14,7 +14,7 @@ export interface IAuth {
 }
 
 
-export function useAuth(): IAuth {
+export function useAuth(): TAuth {
   const [currentUser, setCurrentUser] = useState({ name: '' });
   const fakeDB = useRef([{ userName: '', password: '' }]);
   const navigate = useNavigate();

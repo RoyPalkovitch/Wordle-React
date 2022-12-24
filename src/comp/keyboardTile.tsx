@@ -2,17 +2,17 @@ import { useContext, MouseEvent } from "react";
 import { boardContext } from "../context/boardContext";
 
 
-interface Iprops {
+type propsType = {
   key: string,
-  currentKey: currentKeyboardKey
+  currentKey: currentKeyboardKeyType
 }
 
-export interface currentKeyboardKey {
+export type currentKeyboardKeyType = {
   classState: string,
   letter: string
 }
 
-export function KeyboardTile(props: Iprops) {
+export function KeyboardTile(props: propsType): JSX.Element {
 
   const handleKeyDown = useContext(boardContext)?.handleKeyDown;
 

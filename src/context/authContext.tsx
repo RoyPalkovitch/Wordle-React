@@ -1,6 +1,6 @@
 import { createContext } from "react";
-import { IAuth, User } from "../hooks/useAuth";
+import { TAuth } from "../hooks/useAuth";
 
 
-export const AuthContext = createContext<IAuth | null>(null);
+export const AuthContext = createContext<TAuth | null>(null);
 

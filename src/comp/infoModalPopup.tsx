@@ -1,11 +1,11 @@
 import Modal from 'react-bootstrap/Modal';
 
-interface Iprops {
+type propsType = {
   show: boolean,
   onHide: () => void
 }
 
-export function InfoModalPopup(props: Iprops) {
+export function InfoModalPopup(props: propsType) {
   return (
     <Modal
       {...props}

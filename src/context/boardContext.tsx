@@ -1,4 +1,4 @@
 import { createContext } from "react";
-import { IBoard } from "../hooks/useBoard";
+import { boardType } from "../hooks/useBoard";
 
-export const boardContext = createContext<IBoard | null>(null);
+export const boardContext = createContext<boardType | null>(null);

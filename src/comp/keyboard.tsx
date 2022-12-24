@@ -2,13 +2,13 @@ import { useContext } from "react";
 import { KeyboardRow } from "./keyboardRow";
 import { KeyboardTile } from "./keyboardTile";
 import { boardContext } from "../context/boardContext"
+import { boardType } from "../hooks/useBoard";
 
 
-
-export function Keyboard() {
-  const keyBoardGrid = useContext(boardContext)?.keyBoardGrid;
+export function Keyboard(): JSX.Element {
+  const { keyBoardGrid }: boardType = useContext(boardContext) as boardType;
   if (!keyBoardGrid) {
-    return;
+    return <></>;
   }
   return (
     <section id="keyboard">
