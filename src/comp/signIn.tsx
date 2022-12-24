@@ -2,12 +2,12 @@ import { useContext, useRef } from "react";
 import { AuthContext } from "../context/authContext";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-
+import { TAuth } from "../hooks/useAuth";
 
 
 
 export function SignIn() {
-  const login = useContext(AuthContext)?.login;
+  const { login }: TAuth = useContext(AuthContext) as TAuth;
   const emailInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
 

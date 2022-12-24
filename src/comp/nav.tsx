@@ -5,13 +5,14 @@ import { AuthContext } from "../context/authContext";
 import { InfoModalPopup } from "./infoModalPopup";
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
+import { TAuth } from "../hooks/useAuth";
 
 
 
 export function Nav() {
   let navigate = useNavigate();
 
-  const [currentUser, setCurrentUser] = [useContext(AuthContext)?.currentUser, useContext(AuthContext)?.setCurrentUser];
+  const { currentUser, setCurrentUser }: TAuth = useContext(AuthContext) as TAuth;
   const [show, setShow] = useState(false);
   const handleShow = () => setShow(true);
 

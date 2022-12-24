@@ -1,6 +1,6 @@
 import { useContext, MouseEvent } from "react";
 import { boardContext } from "../context/boardContext";
-
+import { boardType } from "../hooks/useBoard";
 
 type propsType = {
   key: string,
@@ -14,7 +14,7 @@ export type currentKeyboardKeyType = {
 
 export function KeyboardTile(props: propsType): JSX.Element {
 
-  const handleKeyDown = useContext(boardContext)?.handleKeyDown;
+  const { handleKeyDown }: boardType = useContext(boardContext) as boardType;
 
   const handleOnClick = (event: MouseEvent<HTMLButtonElement>) => {
     if (handleKeyDown) {

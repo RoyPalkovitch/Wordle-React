@@ -1,13 +1,11 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-export type User = {
-  name: string
-}
+
 
 
 export type TAuth = {
-  currentUser: User,
+  currentUser: { name: string },
   setCurrentUser: React.Dispatch<React.SetStateAction<{ name: string; }>>,
   login: (userName: string, password: string) => void,
   register: (userName: string, password: string) => void
