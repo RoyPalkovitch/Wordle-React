@@ -1,6 +1,6 @@
 import { Game } from "../comp/gameComponent";
 
-export function GamePage() {
+export function GamePage(): JSX.Element {
 
   return (
     <Game />
