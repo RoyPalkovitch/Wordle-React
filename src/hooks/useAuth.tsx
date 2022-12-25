@@ -1,10 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-
-
-
-export type TAuth = {
+export type authType = {
   currentUser: { name: string },
   setCurrentUser: React.Dispatch<React.SetStateAction<{ name: string; }>>,
   login: (userName: string, password: string) => void,
@@ -12,7 +9,7 @@ export type TAuth = {
 }
 
 
-export function useAuth(): TAuth {
+export function useAuth(): authType {
   const [currentUser, setCurrentUser] = useState({ name: '' });
   const fakeDB = useRef([{ userName: '', password: '' }]);
   const navigate = useNavigate();

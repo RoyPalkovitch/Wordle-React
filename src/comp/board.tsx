@@ -4,7 +4,7 @@ import { GameTileContainer } from "./gameTileContainer";
 import { GameTile } from "./gameTile";
 import { boardType, gameTileType } from "../hooks/useBoard";
 
-export function Board() {
+export function Board(): JSX.Element {
 
   const { board, currentRow, currentCol }: boardType = useContext(boardContext) as boardType;
   return (

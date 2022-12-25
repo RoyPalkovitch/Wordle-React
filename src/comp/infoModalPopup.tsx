@@ -5,7 +5,7 @@ type propsType = {
   onHide: () => void
 }
 
-export function InfoModalPopup(props: propsType) {
+export function InfoModalPopup(props: propsType): JSX.Element {
   return (
     <Modal
       {...props}

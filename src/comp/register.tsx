@@ -2,12 +2,12 @@ import { useContext, useRef } from "react";
 import { AuthContext } from "../context/authContext";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { TAuth } from "../hooks/useAuth";
+import { authType } from "../hooks/useAuth";
 
 export function Register() {
   const emailInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
-  const { register }: TAuth = useContext(AuthContext) as TAuth;
+  const { register }: authType = useContext(AuthContext) as authType;
 
   const handleRegister = () => {
     if (emailInputRef.current && passwordInputRef.current && register) {

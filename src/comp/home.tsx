@@ -3,9 +3,9 @@ import { useContext } from "react";
 import { AuthContext } from "../context/authContext"
 import { useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
-import { TAuth } from "../hooks/useAuth";
-export function Home() {
-  const { currentUser }: TAuth = useContext(AuthContext) as TAuth;
+import { authType } from "../hooks/useAuth";
+export function Home(): JSX.Element {
+  const { currentUser }: authType = useContext(AuthContext) as authType;
   let navigate = useNavigate();
 
   return (
@@ -18,7 +18,7 @@ export function Home() {
             short and sweet, but not too short so folks don’t simply skip
             over it entirely.</p>
           <p>
-            {currentUser ? (<Button onClick={() => navigate('/game')}>
+            {currentUser.name ? (<Button onClick={() => navigate('/game')}>
               Play Now
             </Button>) : null}
           </p>
