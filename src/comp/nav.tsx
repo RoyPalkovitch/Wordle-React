@@ -14,8 +14,10 @@ export function Nav(): JSX.Element {
   let navigate = useNavigate();
   let currentLocation = useLocation().pathname;
   const { currentUser, setCurrentUser }: authType = useContext(AuthContext) as authType;
-  const [show, setShow] = useState(false);
-  const handleShow = () => setShow(true);
+  const [showInfo, setShowInfo] = useState(false);
+  const [showConfig, setShowConfig] = useState(false);
+  const handleShowInfo = () => setShowInfo(true);
+  const handleShowConfig = () => setShowConfig(true);
 
   const handleLogout = () => {
     if (setCurrentUser)
@@ -49,14 +51,14 @@ export function Nav(): JSX.Element {
             )}
 
           <Navbar.Text className="px-5">
-            <Button onClick={handleShow}>Info</Button>
-            <InfoModalPopup show={show} onHide={() => setShow(false)} />
+            <Button onClick={handleShowInfo}>Info</Button>
+            <InfoModalPopup show={showInfo} onHide={() => setShowInfo(false)} />
           </Navbar.Text>
           <>
             {currentLocation === '/game' ? (
               <Navbar.Text className="px-5">
-                <Button onClick={handleShow}>Config</Button>
-                <GameConfigModal show={show} onHide={() => setShow(false)} />
+                <Button onClick={handleShowConfig}>Config</Button>
+                <GameConfigModal show={showConfig} onHide={() => setShowConfig(false)} />
               </Navbar.Text>
             ) : null}
 

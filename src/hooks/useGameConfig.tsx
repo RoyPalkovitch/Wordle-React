@@ -1,16 +1,27 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 export type gameConfigType = {
-  lengthOfWord: React.RefObject<HTMLInputElement>,
-  numberOfTries: React.RefObject<HTMLInputElement>
+  lengthOfWord: React.RefObject<number>,
+  numberOfTries: React.RefObject<number>,
+  propChanged: boolean,
+  changeConfig: (wordLengthRef: number, numberOfTriesRef: number) => void;
 }
 
 export function useGameConfig(): gameConfigType {
-  const lengthOfWord = useRef<HTMLInputElement>(null);
-  const numberOfTries = useRef<HTMLInputElement>(null);
+  const lengthOfWord = useRef(5);
+  const numberOfTries = useRef(5);
+  const [propChanged, setPropChange] = useState(false);
+
+  function changeConfig(wordLengthRef: number, numberOfTriesRef: number) {
+    lengthOfWord.current = wordLengthRef;
+    numberOfTries.current = numberOfTriesRef;
+    setPropChange(!propChanged);
+  }
 
   return ({
     lengthOfWord,
-    numberOfTries
+    numberOfTries,
+    propChanged,
+    changeConfig
   })
 }

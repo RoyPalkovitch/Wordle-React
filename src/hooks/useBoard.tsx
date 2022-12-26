@@ -1,4 +1,6 @@
-import { useState, useEffect, useRef, MouseEvent } from "react";
+import { useState, useEffect, useRef, useContext, MouseEvent } from "react";
+import { gameConfigContext } from '../context/gameConfigContext';
+import { gameConfigType } from "./useGameConfig";
 
 export type gameTileType = {
   classState: string,
@@ -26,6 +28,10 @@ export type boardType = {
 
 
 export function useBoard(): boardType {
+
+  const { lengthOfWord, numberOfTries, propChanged }: gameConfigType = useContext(gameConfigContext) as gameConfigType;
+
+
   const [board, setBoard] = useState([[{ classState: '', letter: '' }]]);
   const [showGameEndPopup, setGameEndPopup] = useState(false);
   const [resetGame, setResetGame] = useState(false);
@@ -48,7 +54,7 @@ export function useBoard(): boardType {
     return () =>
       document.removeEventListener('keydown', handleKeyDown);
     // eslint-disable-next-line 
-  }, [resetGame]);
+  }, [resetGame, propChanged]);
 
   const setGame = () => {
     board.splice(0);
@@ -65,12 +71,27 @@ export function useBoard(): boardType {
   }
 
   const createBoard = () => {
-    if (board.length === 5) {
+    if (board.length === numberOfTries.current) {
       return;
     }
-    for (let i = 0; i < 5; i++) {
+    let numOfTries: number;
+    let length: number;
+    if (numberOfTries.current === null) {
+      numOfTries = 5;
+    } else {
+      numOfTries = numberOfTries.current;
+    }
+
+    if (lengthOfWord.current === null) {
+      length = 5;
+    } else {
+      length = lengthOfWord.current;
+    }
+
+
+    for (let i = 0; i < numOfTries; i++) {
       board.push([]);
-      for (let j = 0; j < 5; j++) {
+      for (let j = 0; j < length; j++) {
         board[i].push({ classState: '', letter: '' });
       }
     }
