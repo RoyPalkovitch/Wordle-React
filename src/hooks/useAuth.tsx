@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 export type authType = {
   currentUser: { name: string },
   setCurrentUser: React.Dispatch<React.SetStateAction<{ name: string; }>>,
+  emailInputRef: React.RefObject<HTMLInputElement>,
+  passwordInputRef: React.RefObject<HTMLInputElement>,
   login: (userName: string, password: string) => void,
   register: (userName: string, password: string) => void
 }
@@ -12,8 +14,9 @@ export type authType = {
 export function useAuth(): authType {
   const [currentUser, setCurrentUser] = useState({ name: '' });
   const fakeDB = useRef([{ userName: '', password: '' }]);
+  const emailInputRef = useRef<HTMLInputElement>(null);
+  const passwordInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
-
   const login = (userName: string, password: string) => {
     if (checkDB(userName, password)) {
       fetch('https://jsonplaceholder.typicode.com/users/1')
@@ -51,6 +54,8 @@ export function useAuth(): authType {
 
   return ({
     currentUser,
+    emailInputRef,
+    passwordInputRef,
     setCurrentUser,
     register,
     login

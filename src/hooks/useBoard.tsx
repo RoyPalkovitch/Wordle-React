@@ -23,6 +23,8 @@ export type boardType = {
   handleKeyDown: (e: KeyboardEvent | MouseEvent<HTMLButtonElement>) => void
 }
 
+
+
 export function useBoard(): boardType {
   const [board, setBoard] = useState([[{ classState: '', letter: '' }]]);
   const [showGameEndPopup, setGameEndPopup] = useState(false);
@@ -41,7 +43,6 @@ export function useBoard(): boardType {
   const charCount = useRef(countCharsInWord(currentWord));
 
   useEffect(() => {
-
     setGame()
     document.addEventListener("keydown", handleKeyDown);
     return () =>
@@ -49,6 +50,19 @@ export function useBoard(): boardType {
     // eslint-disable-next-line 
   }, [resetGame]);
 
+  const setGame = () => {
+    board.splice(0);
+    keyBoardGrid.current = [];
+    currentRow.current = 0;
+    currentCol.current = 0;
+    winOrLose.current = '';
+    charCount.current = countCharsInWord(currentWord);
+    createKeyboard();
+    createBoard();
+    setBoard([...board]);
+    setGameEndPopup(false);
+    setResetGame(false);
+  }
 
   const createBoard = () => {
     if (board.length === 5) {
@@ -100,9 +114,12 @@ export function useBoard(): boardType {
     if (currentRow.current === board.length) {
       return;
     }
+
     const letter: string = (e as KeyboardEvent).key ? (e as KeyboardEvent).key : (e as MouseEvent<HTMLButtonElement>).currentTarget.value;
     const currentFocusedRow: gameTileType[] = board[currentRow.current];
+
     if (currentFocusedRow.length - 1 === currentCol.current && letter === "Enter") {
+
       if (currentFocusedRow[currentCol.current]) {
         searchCorrectWords(currentFocusedRow);
         currentRow.current++;
@@ -110,6 +127,11 @@ export function useBoard(): boardType {
         charCount.current = countCharsInWord(currentWord);
         if (checkWin(currentFocusedRow)) {
           winOrLose.current = 'Win';
+          setGameEndPopup(true);
+          return
+        }
+        if (currentRow.current === 5) {
+          winOrLose.current = 'Lose';
           setGameEndPopup(true);
           return
         }
@@ -129,6 +151,8 @@ export function useBoard(): boardType {
 
 
   }
+
+
 
   const deleteWord = (currentFocusedRow: gameTileType[]) => {
     currentFocusedRow[currentCol.current].letter = '';
@@ -233,19 +257,7 @@ export function useBoard(): boardType {
     }
   }
 
-  const setGame = () => {
-    board.splice(0);
-    keyBoardGrid.current = [];
-    currentRow.current = 0;
-    currentCol.current = 0;
-    winOrLose.current = '';
-    charCount.current = countCharsInWord(currentWord);
-    createKeyboard();
-    createBoard();
-    setBoard([...board]);
-    setGameEndPopup(false);
-    setResetGame(false);
-  }
+
 
 
   return {

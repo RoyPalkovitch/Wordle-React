@@ -1,4 +1,4 @@
-import { useContext, useRef } from "react";
+import { useContext } from "react";
 import { AuthContext } from "../context/authContext";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
@@ -7,10 +7,7 @@ import { authType } from "../hooks/useAuth";
 
 
 export function SignIn() {
-  const { login }: authType = useContext(AuthContext) as authType;
-  const emailInputRef = useRef<HTMLInputElement>(null);
-  const passwordInputRef = useRef<HTMLInputElement>(null);
-
+  const { login, emailInputRef, passwordInputRef }: authType = useContext(AuthContext) as authType;
 
   const handleLogin = () => {
     if (emailInputRef.current && passwordInputRef.current && login) {

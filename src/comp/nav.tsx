@@ -1,6 +1,6 @@
 import { Button } from "react-bootstrap";
 import { useState, useContext } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/authContext";
 import { InfoModalPopup } from "./infoModalPopup";
 import Container from 'react-bootstrap/Container';
@@ -11,7 +11,7 @@ import { authType } from "../hooks/useAuth";
 
 export function Nav(): JSX.Element {
   let navigate = useNavigate();
-
+  let currentLocation = useLocation().pathname;
   const { currentUser, setCurrentUser }: authType = useContext(AuthContext) as authType;
   const [show, setShow] = useState(false);
   const handleShow = () => setShow(true);
@@ -51,6 +51,15 @@ export function Nav(): JSX.Element {
             <Button onClick={handleShow}>Info</Button>
             <InfoModalPopup show={show} onHide={() => setShow(false)} />
           </Navbar.Text>
+          <>
+            {currentLocation === '/game' ? (
+              <Navbar.Text className="px-5">
+                <Button onClick={handleShow}>Info</Button>
+                <InfoModalPopup show={show} onHide={() => setShow(false)} />
+              </Navbar.Text>
+            ) : null}
+
+          </>
         </Navbar.Collapse>
       </Container>
     </Navbar>
