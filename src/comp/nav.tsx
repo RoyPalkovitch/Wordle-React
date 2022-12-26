@@ -3,9 +3,10 @@ import { useState, useContext } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/authContext";
 import { InfoModalPopup } from "./infoModalPopup";
+import { GameConfigModal } from "./gameConfigModal";
+import { authType } from "../hooks/useAuth";
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
-import { authType } from "../hooks/useAuth";
 
 
 
@@ -54,8 +55,8 @@ export function Nav(): JSX.Element {
           <>
             {currentLocation === '/game' ? (
               <Navbar.Text className="px-5">
-                <Button onClick={handleShow}>Info</Button>
-                <InfoModalPopup show={show} onHide={() => setShow(false)} />
+                <Button onClick={handleShow}>Config</Button>
+                <GameConfigModal show={show} onHide={() => setShow(false)} />
               </Navbar.Text>
             ) : null}
 
