@@ -8,18 +8,12 @@ export type gameTileType = {
 }
 
 export type boardType = {
-  board: {
-    classState: string;
-    letter: string;
-  }[][],
+  board: gameTileType[][],
+  letters: string,
+  showGameEndPopup: boolean,
   currentRow: React.MutableRefObject<number>,
   currentCol: React.MutableRefObject<number>,
-  letters: string,
-  keyBoardGrid: React.MutableRefObject<{
-    letter: string;
-    classState: string;
-  }[][]>,
-  showGameEndPopup: boolean,
+  keyBoardGrid: React.MutableRefObject<gameTileType[][]>,
   winOrLose: React.MutableRefObject<string>,
   setResetGame: React.Dispatch<React.SetStateAction<boolean>>,
   handleKeyDown: (e: KeyboardEvent | MouseEvent<HTMLButtonElement>) => void
@@ -32,21 +26,21 @@ export function useBoard(): boardType {
   const { lengthOfWord, numberOfTries, propChanged }: gameConfigType = useContext(gameConfigContext) as gameConfigType;
 
 
-  const [board, setBoard] = useState([[{ classState: '', letter: '' }]]);
-  const [showGameEndPopup, setGameEndPopup] = useState(false);
-  const [resetGame, setResetGame] = useState(false);
+  const [board, setBoard] = useState<gameTileType[][]>([[{ classState: '', letter: '' }]]);
+  const [showGameEndPopup, setGameEndPopup] = useState<boolean>(false);
+  const [resetGame, setResetGame] = useState<boolean>(false);
 
-  const currentRow = useRef(0);
-  const currentCol = useRef(0);
-  const keyBoardGrid = useRef([[{
+  const currentRow = useRef<number>(0);
+  const currentCol = useRef<number>(0);
+  const keyBoardGrid = useRef<gameTileType[][]>([[{
     letter: '',
     classState: 'keyboard-tile '
   }]]);
-  const winOrLose = useRef("");
+  const winOrLose = useRef<string>("");
 
-  const currentWord = "event".toUpperCase();
-  const letters = "qwertyuiopasdfghjklzxcvbnm";
-  const charCount = useRef(countCharsInWord(currentWord));
+  const currentWord: string = "event".toUpperCase();
+  const letters: string = "qwertyuiopasdfghjklzxcvbnm";
+  const charCount = useRef<{ [word: string]: number }>({ '': 0 });
 
   useEffect(() => {
     setGame()
@@ -130,50 +124,44 @@ export function useBoard(): boardType {
     }
 
   }
+
+
   const handleKeyDown = (e: KeyboardEvent | MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (currentRow.current === board.length) {
-      return;
-    }
 
     const letter: string = (e as KeyboardEvent).key ? (e as KeyboardEvent).key : (e as MouseEvent<HTMLButtonElement>).currentTarget.value;
     const currentFocusedRow: gameTileType[] = board[currentRow.current];
-
-    if (currentFocusedRow.length - 1 === currentCol.current && letter === "Enter") {
-
-      if (currentFocusedRow[currentCol.current]) {
-        searchCorrectWords(currentFocusedRow);
-        currentRow.current++;
-        currentCol.current = 0;
-        charCount.current = countCharsInWord(currentWord);
-        if (checkWin(currentFocusedRow)) {
-          winOrLose.current = 'Win';
-          setGameEndPopup(true);
-          return
-        }
-        if (currentRow.current === 5) {
-          winOrLose.current = 'Lose';
-          setGameEndPopup(true);
-          return
-        }
-      }
-    } else {
-      if (letter === "Backspace") {
-        deleteWord(currentFocusedRow);
-      } else {
-        write(letter, currentFocusedRow);
-
-      }
+    if (letters.includes(letter)) {
+      write(letter, currentFocusedRow);
     }
-    if (currentCol.current === 4) {
-      console.log("Done");
+    if (letter === "Backspace") {
+      deleteWord(currentFocusedRow);
     }
     setBoard([...board]);
 
 
   }
 
+  const shouldMoveRow = (currentFocusedRow: gameTileType[],) => {
+    searchCorrectWords(currentFocusedRow);
+    console.log("Done");
+    currentRow.current++;
+    currentCol.current = 0;
+    charCount.current = countCharsInWord(currentWord);
+    if (checkWin(currentFocusedRow)) {
+      winOrLose.current = 'Win';
+      setGameEndPopup(true);
+      document.removeEventListener('keydown', handleKeyDown);
+      return
+    }
+    if (currentRow.current === 5) {
+      winOrLose.current = 'Lose';
+      setGameEndPopup(true);
+      document.removeEventListener('keydown', handleKeyDown);
+      return
+    }
 
+  }
 
   const deleteWord = (currentFocusedRow: gameTileType[]) => {
     currentFocusedRow[currentCol.current].letter = '';
@@ -183,9 +171,7 @@ export function useBoard(): boardType {
   }
 
   const write = (letter: string, currentFocusedRow: gameTileType[]) => {
-    if (!letters.includes(letter.toLowerCase())) {
-      return;
-    }
+
     if (currentFocusedRow[currentCol.current].letter && currentFocusedRow[currentCol.current + 1] !== undefined) {
       currentCol.current++;
       currentFocusedRow[currentCol.current].letter = letter.toUpperCase();
@@ -195,6 +181,7 @@ export function useBoard(): boardType {
 
     } else {
       currentFocusedRow[currentCol.current].letter = letter.toUpperCase();
+      shouldMoveRow(currentFocusedRow);
     }
   }
 
@@ -255,7 +242,7 @@ export function useBoard(): boardType {
     return false;
   }
 
-  function countCharsInWord(currentWord: string): { [word: string]: number } {
+  const countCharsInWord = (currentWord: string): { [word: string]: number } => {
     const count: { [word: string]: number } = {};
     for (let i = 0; i < currentWord.length; i++) {
       if (count[currentWord[i]])
@@ -267,7 +254,7 @@ export function useBoard(): boardType {
     return count;
   }
 
-  const getKeyboardTile = (letter: string): gameTileType | void => {
+  const getKeyboardTile = (letter: string): gameTileType => {
     for (let i = 0; i < keyBoardGrid.current.length; i++) {
       for (let j = 0; j < keyBoardGrid.current[i].length; j++) {
         if (letter === keyBoardGrid.current[i][j].letter) {
@@ -276,9 +263,8 @@ export function useBoard(): boardType {
         }
       }
     }
+    return { classState: '', letter: "" }
   }
-
-
 
 
   return {
