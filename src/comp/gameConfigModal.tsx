@@ -14,15 +14,18 @@ export function GameConfigModal(props: propsType): JSX.Element {
   const wordLengthRef = useRef<HTMLInputElement>(null);
   const numberOfTriesRef = useRef<HTMLInputElement>(null);
 
-
-
-  function gameConfigHandle() {
+  const gameConfigHandle = () => {
     if (wordLengthRef.current !== null && numberOfTriesRef.current !== null) {
       const wordLength = +wordLengthRef.current.value
       const numberOfTries = +numberOfTriesRef.current.value
       changeConfig(wordLength, numberOfTries);
       props.onHide();
     }
+  }
+
+  const resetConfig = () => {
+    changeConfig(5, 5);
+    props.onHide();
   }
 
   return (
@@ -56,7 +59,8 @@ export function GameConfigModal(props: propsType): JSX.Element {
             onChange={() => setChanged(!changed)} />
         </label>
         <br />
-        <input type="submit" onClick={gameConfigHandle} />
+        <input type="submit" value="SUBMIT" onClick={gameConfigHandle} />
+        <input type="submit" value='RESET' onClick={resetConfig} />
       </Modal.Body>
     </Modal>
   );

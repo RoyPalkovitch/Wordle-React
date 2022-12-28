@@ -21,7 +21,7 @@ export function EndGamePopup(): JSX.Element {
 
   return (
     <Modal show={show}
-      onHide={handleClose}
+      onHide={handlePlayAgain}
       size="lg"
       aria-labelledby="contained-modal-title-vcenter"
       centered
