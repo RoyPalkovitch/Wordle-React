@@ -5,13 +5,17 @@ type propsType = {
   onHide: () => void
 }
 
+
 export function InfoModalPopup(props: propsType): JSX.Element {
   return (
     <Modal
       {...props}
       size="lg"
-      aria-labelledby="contained-modal-title-vcenter"
-      centered>
+      centered
+      autoFocus={true}
+      backdrop="static"
+      onEscapeKeyDown={props.onHide}
+      aria-labelledby="contained-modal-title-vcenter">
       <Modal.Header closeButton >
         <h3>Wordle</h3>
       </Modal.Header>

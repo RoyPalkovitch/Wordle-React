@@ -30,10 +30,13 @@ export function GameConfigModal(props: propsType): JSX.Element {
 
   return (
     <Modal
-      {...props}
+      centered
       size="lg"
+      {...props}
+      backdrop="static"
+      onEscapeKeyDown={props.onHide}
       aria-labelledby="contained-modal-title-center"
-      centered>
+    >
       <Modal.Header closeButton >
         <h3>Config</h3>
       </Modal.Header>
