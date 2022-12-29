@@ -16,8 +16,8 @@ export function GameConfigModal(props: propsType): JSX.Element {
 
   const gameConfigHandle = () => {
     if (wordLengthRef.current !== null && numberOfTriesRef.current !== null) {
-      const wordLength = +wordLengthRef.current.value
-      const numberOfTries = +numberOfTriesRef.current.value
+      const wordLength = +wordLengthRef.current.value;
+      const numberOfTries = +numberOfTriesRef.current.value;
       changeConfig(wordLength, numberOfTries);
       props.onHide();
     }
