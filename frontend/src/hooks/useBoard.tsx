@@ -38,17 +38,32 @@ export function useBoard(): boardType {
   }]]);
   const winOrLose = useRef<string>("");
 
-  const currentWord: string = "event".toUpperCase();
+  const currentWord = useRef('');
   const letters: string = "qwertyuiopasdfghjklzxcvbnm";
   const charCount = useRef<{ [word: string]: number }>({ '': 0 });
 
   useEffect(() => {
-    setGame()
+
+  }, [])
+
+  useEffect(() => {
+    const fetchWord = async () => {
+      currentWord.current = (await (await getWord()).text()).toUpperCase();
+      setGame();
+    }
+    fetchWord();
+
     document.addEventListener("keydown", handleKeyDown);
     return () =>
       document.removeEventListener('keydown', handleKeyDown);
     // eslint-disable-next-line 
   }, [resetGame, propChanged]);
+
+  const getWord = async () => {
+    const request = await fetch('http://localhost:3003/game');
+
+    return request;
+  }
 
   const setGame = () => {
     board.splice(0);
@@ -56,7 +71,7 @@ export function useBoard(): boardType {
     currentRow.current = 0;
     currentCol.current = 0;
     winOrLose.current = '';
-    charCount.current = countCharsInWord(currentWord);
+    charCount.current = countCharsInWord(currentWord.current);
     createKeyboard();
     createBoard();
     setBoard([...board]);
@@ -147,7 +162,7 @@ export function useBoard(): boardType {
     console.log("Done");
     currentRow.current++;
     currentCol.current = 0;
-    charCount.current = countCharsInWord(currentWord);
+    charCount.current = countCharsInWord(currentWord.current);
     if (checkWin(currentFocusedRow)) {
       winOrLose.current = 'Win';
       setGameEndPopup(true);
@@ -194,8 +209,8 @@ export function useBoard(): boardType {
         return;
       }
 
-      if (currentWord.includes(letter)) {
-        if (currentWord[index] === letter) {
+      if (currentWord.current.includes(letter)) {
+        if (currentWord.current[index] === letter) {
           charCount.current[letter] -= 1;
           if (charCount.current[letter] === 0) {
             keyboard.classState = 'keyboard-tile correct';
@@ -221,7 +236,7 @@ export function useBoard(): boardType {
 
     for (let index = 0; index < currentFocusedRow.length; index++) {//checking each column in row
       const letter = currentFocusedRow[index].letter;
-      if (currentWord.includes(letter) && currentWord[index] !== letter) {
+      if (currentWord.current.includes(letter) && currentWord.current[index] !== letter) {
         if (currentFocusedRow[index].classState !== 'correct' && charCount.current[letter] >= 1) {
           currentFocusedRow[index].classState = 'exist';//exist in the given word
           charCount.current[letter] -= 1;
@@ -236,7 +251,7 @@ export function useBoard(): boardType {
 
   const checkWin = (currentFocusedRow: gameTileType[]): boolean => {//check if all the word are correct and in order
     const win = currentFocusedRow.map(col => (col.letter)).join('');
-    if (win === currentWord) {
+    if (win === currentWord.current) {
       return true;
     }
     return false;
