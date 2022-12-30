@@ -1,10 +1,26 @@
 import { Router, Request, Response } from "express";
-import { getWord } from "./gameLogic";
+import { getWord, searchCorrectWords, gameTileType } from "./gameLogic";
+import bodyParser from 'body-parser';
+import { json } from "stream/consumers";
 
 export const gameRouter = Router();
+interface IboardData {
+  currentFocusedRow: gameTileType[],
+  currentWord: string
+  keyBoardGrid: gameTileType[][];
+}
+
 
 gameRouter.get('/', async (req: Request, res: Response) => {
   const reqWord = await getWord();
   res.send(reqWord);
 });
+
+gameRouter.put('/searchcorrectwords', bodyParser.json(), (req: Request, res: Response) => {
+  const data: IboardData = req.body;
+  const result = searchCorrectWords(data.currentFocusedRow, data.currentWord, data.keyBoardGrid);
+  return res.status(200).send(JSON.stringify(result));
+});
+
+
 

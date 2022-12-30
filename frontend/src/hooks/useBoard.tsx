@@ -37,19 +37,15 @@ export function useBoard(): boardType {
     classState: 'keyboard-tile '
   }]]);
   const winOrLose = useRef<string>("");
-
   const currentWord = useRef('');
+
   const letters: string = "qwertyuiopasdfghjklzxcvbnm";
-  const charCount = useRef<{ [word: string]: number }>({ '': 0 });
+  const endPoint: string = 'http://localhost:3003';
 
-  useEffect(() => {
-
-  }, [])
 
   useEffect(() => {
     const fetchWord = async () => {
-      currentWord.current = (await (await getWord()).text()).toUpperCase();
-      setGame();
+      await setGame();
     }
     fetchWord();
 
@@ -60,18 +56,17 @@ export function useBoard(): boardType {
   }, [resetGame, propChanged]);
 
   const getWord = async () => {
-    const request = await fetch('http://localhost:3003/game');
-
-    return request;
+    const request = await fetch(`${endPoint}/game`);
+    return await request.text();
   }
 
-  const setGame = () => {
+  const setGame = async () => {
+    currentWord.current = (await getWord()).toUpperCase();
     board.splice(0);
     keyBoardGrid.current = [];
     currentRow.current = 0;
     currentCol.current = 0;
     winOrLose.current = '';
-    charCount.current = countCharsInWord(currentWord.current);
     createKeyboard();
     createBoard();
     setBoard([...board]);
@@ -141,13 +136,13 @@ export function useBoard(): boardType {
   }
 
 
-  const handleKeyDown = (e: KeyboardEvent | MouseEvent<HTMLButtonElement>) => {
+  const handleKeyDown = async (e: KeyboardEvent | MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
     const letter: string = (e as KeyboardEvent).key ? (e as KeyboardEvent).key : (e as MouseEvent<HTMLButtonElement>).currentTarget.value;
     const currentFocusedRow: gameTileType[] = board[currentRow.current];
     if (letters.includes(letter)) {
-      write(letter, currentFocusedRow);
+      await write(letter, currentFocusedRow);
     }
     if (letter === "Backspace") {
       deleteWord(currentFocusedRow);
@@ -157,12 +152,11 @@ export function useBoard(): boardType {
 
   }
 
-  const shouldMoveRow = (currentFocusedRow: gameTileType[],) => {
-    searchCorrectWords(currentFocusedRow);
+  const shouldMoveRow = async (currentFocusedRow: gameTileType[],) => {
+    await searchCorrectWords(currentFocusedRow);
     console.log("Done");
     currentRow.current++;
     currentCol.current = 0;
-    charCount.current = countCharsInWord(currentWord.current);
     if (checkWin(currentFocusedRow)) {
       winOrLose.current = 'Win';
       setGameEndPopup(true);
@@ -185,7 +179,7 @@ export function useBoard(): boardType {
     }
   }
 
-  const write = (letter: string, currentFocusedRow: gameTileType[]) => {
+  const write = async (letter: string, currentFocusedRow: gameTileType[]) => {
 
     if (currentFocusedRow[currentCol.current].letter && currentFocusedRow[currentCol.current + 1] !== undefined) {
       currentCol.current++;
@@ -196,57 +190,30 @@ export function useBoard(): boardType {
 
     } else {
       currentFocusedRow[currentCol.current].letter = letter.toUpperCase();
-      shouldMoveRow(currentFocusedRow);
+      await shouldMoveRow(currentFocusedRow);
     }
   }
 
-  const searchCorrectWords = (currentFocusedRow: gameTileType[]) => {//search for correct words in the row
-
-    for (let index = 0; index < currentFocusedRow.length; index++) {//checking each column in row
-      const letter = currentFocusedRow[index].letter;
-      const keyboard = getKeyboardTile(letter);
-      if (!keyboard) {
-        return;
-      }
-
-      if (currentWord.current.includes(letter)) {
-        if (currentWord.current[index] === letter) {
-          charCount.current[letter] -= 1;
-          if (charCount.current[letter] === 0) {
-            keyboard.classState = 'keyboard-tile correct';
-          }
-          if (charCount.current[letter] !== 0 && keyboard.classState === 'keyboard-tile ') {
-            keyboard.classState += 'exist';
-          }
-          currentFocusedRow[index].classState = 'correct';//correct place
-
-        }
-        else {
-          if (keyboard.classState === 'keyboard-tile ') {
-            keyboard.classState += 'exist';
-          }
-        }
-      } else {
-        currentFocusedRow[index].classState = 'wrong';
-        if ((keyboard.classState === 'keyboard-tile ')) {
-          keyboard.classState += 'wrong';
-        }
-      }
+  const searchCorrectWords = async (currentFocusedRow: gameTileType[]) => {//search for correct words in the row
+    const dataToSend = {
+      currentFocusedRow,
+      currentWord: currentWord.current,
+      keyBoardGrid: keyBoardGrid.current
     }
-
-    for (let index = 0; index < currentFocusedRow.length; index++) {//checking each column in row
-      const letter = currentFocusedRow[index].letter;
-      if (currentWord.current.includes(letter) && currentWord.current[index] !== letter) {
-        if (currentFocusedRow[index].classState !== 'correct' && charCount.current[letter] >= 1) {
-          currentFocusedRow[index].classState = 'exist';//exist in the given word
-          charCount.current[letter] -= 1;
-        }
-        else {
-          currentFocusedRow[index].classState = 'wrong';
-        }
+    const getCorrectData = await fetch(`${endPoint}/game/searchcorrectwords`,
+      {
+        method: 'PUT',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify(dataToSend)
       }
-    }
-
+    );
+    const colorDataRow = await getCorrectData.json() as { currentFocusedRow: gameTileType[], keyBoardGrid: gameTileType[][] };
+    colorDataRow.currentFocusedRow.forEach((colorData, i) => {
+      currentFocusedRow[i].classState = colorData.classState;
+    });
+    keyBoardGrid.current = colorDataRow.keyBoardGrid;
   }
 
   const checkWin = (currentFocusedRow: gameTileType[]): boolean => {//check if all the word are correct and in order
@@ -257,29 +224,6 @@ export function useBoard(): boardType {
     return false;
   }
 
-  const countCharsInWord = (currentWord: string): { [word: string]: number } => {
-    const count: { [word: string]: number } = {};
-    for (let i = 0; i < currentWord.length; i++) {
-      if (count[currentWord[i]])
-        count[currentWord[i]] += 1;
-      else {
-        count[currentWord[i]] = 1;
-      }
-    }
-    return count;
-  }
-
-  const getKeyboardTile = (letter: string): gameTileType => {
-    for (let i = 0; i < keyBoardGrid.current.length; i++) {
-      for (let j = 0; j < keyBoardGrid.current[i].length; j++) {
-        if (letter === keyBoardGrid.current[i][j].letter) {
-
-          return keyBoardGrid.current[i][j];
-        }
-      }
-    }
-    return { classState: '', letter: "" }
-  }
 
 
   return {
