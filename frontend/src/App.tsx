@@ -1,4 +1,4 @@
-import { Nav } from "./comp/nav";
+import { Nav } from "./comp/navbarModules/nav";
 import { Outlet } from "react-router-dom";
 import { AuthContext } from "./context/authContext";
 import { useGameConfig } from "./hooks/useGameConfig";

@@ -1,7 +1,7 @@
 import Modal from 'react-bootstrap/Modal';
 import { useContext, useRef, useState } from 'react';
-import { gameConfigContext } from '../context/gameConfigContext';
-import { gameConfigType } from "../hooks/useGameConfig";
+import { gameConfigContext } from '../../../context/gameConfigContext'
+import { gameConfigType } from "../../../hooks/useGameConfig";
 
 type propsType = {
   show: boolean,

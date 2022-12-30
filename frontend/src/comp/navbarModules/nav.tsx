@@ -1,12 +1,12 @@
 import { Button } from "react-bootstrap";
-import { useState, useContext } from "react";
-import { useNavigate, Link, useLocation } from "react-router-dom";
-import { AuthContext } from "../context/authContext";
-import { InfoModalPopup } from "./infoModalPopup";
-import { GameConfigModal } from "./gameConfigModal";
-import { authType } from "../hooks/useAuth";
-import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
+import { useState, useContext } from "react";
+import { authType } from "../../hooks/useAuth";
+import Container from 'react-bootstrap/Container';
+import { InfoModalPopup } from "./infoModalPopup";
+import { AuthContext } from "../../context/authContext";
+import { useNavigate, Link, useLocation } from "react-router-dom";
+import { GameConfigModal } from "../gameModules/board/gameConfigModal"
 
 
 

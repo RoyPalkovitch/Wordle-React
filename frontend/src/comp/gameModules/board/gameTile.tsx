@@ -1,4 +1,4 @@
-import { gameTileType } from "../hooks/useBoard"
+import { gameTileType } from "../../../hooks/useBoard"
 
 
 export function GameTile({ classState, letter }: gameTileType): JSX.Element {

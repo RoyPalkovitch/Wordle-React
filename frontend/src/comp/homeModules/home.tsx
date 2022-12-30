@@ -1,9 +1,9 @@
 
 import { useContext } from "react";
-import { AuthContext } from "../context/authContext"
+import { AuthContext } from "../../context/authContext"
 import { useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
-import { authType } from "../hooks/useAuth";
+import { authType } from "../../hooks/useAuth";
 export function Home(): JSX.Element {
   const { currentUser }: authType = useContext(AuthContext) as authType;
   let navigate = useNavigate();

@@ -8,47 +8,52 @@ export const getWord = (): Promise<string> => {
   return new Promise<string>(resolve => setTimeout(resolve, 1000, 'event'));
 }
 
-export const searchCorrectWords = (currentFocusedRow: gameTileType[], currentWord: string, keyBoardGrid: gameTileType[][]): { currentFocusedRow: gameTileType[], keyBoardGrid: gameTileType[][] } => {//search for correct words in the row
-  const charCount: { [word: string]: number } = countCharsInWord(currentWord);
+export const searchCorrectWords =
+  (currentFocusedRow: gameTileType[], currentWord: string, keyBoardGrid: gameTileType[][]): { currentFocusedRow: gameTileType[], keyBoardGrid: gameTileType[][] } | boolean => {//search for correct words in the row
+    const charCount: { [word: string]: number } = countCharsInWord(currentWord);
+    const letters: string = "qwertyuiopasdfghjklzxcvbnm";
 
-  for (let index = 0; index < currentFocusedRow.length; index++) {//checking each column in row
-    const letter = currentFocusedRow[index].letter;
-    const keyboard = getKeyboardTile(letter, keyBoardGrid);
-    if (!keyboard) {
-      continue;
-    }
-    //letter is not in the word
-    if (!currentWord.includes(letter) || charCount[letter] === 0) {
-      currentFocusedRow[index].classState = 'wrong';
-      if (keyboard.classState === 'keyboard-tile ') {
-        keyboard.classState += 'wrong';
+    for (let index = 0; index < currentFocusedRow.length; index++) {//checking each column in row
+      const letter = currentFocusedRow[index].letter;
+      if (!letters.includes(letter)) {
+        return false;
       }
-      continue;
-    }
-    //mark keyboard if letter exist but not in the current place (the row will be colored in the next for loop)
-    if (currentWord[index] !== letter) {
-      charCount[letter] -= 1;
-      if (!keyboard.classState.includes('correct'))
-        keyboard.classState = 'keyboard-tile exist';
-      currentFocusedRow[index].classState = 'exist';//exist in the given word
-      continue;
+      const keyboard = getKeyboardTile(letter, keyBoardGrid);
+      if (!keyboard) {
+        continue;
+      }
+      //letter is not in the word
+      if (!currentWord.includes(letter) || charCount[letter] === 0) {
+        currentFocusedRow[index].classState = 'wrong';
+        if (keyboard.classState === 'keyboard-tile ') {
+          keyboard.classState += 'wrong';
+        }
+        continue;
+      }
+      //mark keyboard if letter exist but not in the current place (the row will be colored in the next for loop)
+      if (currentWord[index] !== letter) {
+        charCount[letter] -= 1;
+        if (!keyboard.classState.includes('correct'))
+          keyboard.classState = 'keyboard-tile exist';
+        currentFocusedRow[index].classState = 'exist';//exist in the given word
+        continue;
+      }
+
+      //if letter exist
+      if (currentWord[index] === letter) {
+        charCount[letter] -= 1;
+        currentFocusedRow[index].classState = 'correct';
+        if (charCount[letter] === 0) {
+          keyboard.classState = 'keyboard-tile correct';
+        }
+        if (charCount[letter] !== 0 && keyboard.classState === 'keyboard-tile ') {
+          keyboard.classState = 'keyboard-tile exist';
+        }
+      }
     }
 
-    //if letter exist
-    if (currentWord[index] === letter) {
-      charCount[letter] -= 1;
-      currentFocusedRow[index].classState = 'correct';
-      if (charCount[letter] === 0) {
-        keyboard.classState = 'keyboard-tile correct';
-      }
-      if (charCount[letter] !== 0 && keyboard.classState === 'keyboard-tile ') {
-        keyboard.classState = 'keyboard-tile exist';
-      }
-    }
+    return { currentFocusedRow, keyBoardGrid };
   }
-
-  return { currentFocusedRow, keyBoardGrid };
-}
 
 const countCharsInWord = (currentWord: string): { [word: string]: number } => {
   const count: { [word: string]: number } = {};

@@ -1,23 +1,23 @@
 import { useContext } from "react";
-import { AuthContext } from "../context/authContext";
+import { AuthContext } from "../../context/authContext";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { authType } from "../hooks/useAuth";
+import { authType } from "../../hooks/useAuth";
 
+export function Register() {
 
+  const { register, emailInputRef, passwordInputRef }: authType = useContext(AuthContext) as authType;
 
-export function SignIn() {
-  const { login, emailInputRef, passwordInputRef }: authType = useContext(AuthContext) as authType;
-
-  const handleLogin = () => {
-    if (emailInputRef.current && passwordInputRef.current && login) {
-      login(emailInputRef.current.value, passwordInputRef.current.value);
+  const handleRegister = () => {
+    if (emailInputRef.current && passwordInputRef.current && register) {
+      register(emailInputRef.current.value, passwordInputRef.current.value);
     }
+    //setstate error
   }
 
   return (
     <Form className="w-50 mx-auto">
-      <h3 className="text-center">Sign In</h3>
+      <h3 className="text-center">Register</h3>
       <Form.Group className="mb-3" controlId="formBasicEmail">
         <Form.Label>Email address</Form.Label>
         <Form.Control type="email" placeholder="Enter email" ref={emailInputRef} />
@@ -31,7 +31,7 @@ export function SignIn() {
         <Form.Control type="password" placeholder="Password" ref={passwordInputRef} />
       </Form.Group>
 
-      <Button variant="primary" type="submit" onClick={handleLogin}>
+      <Button variant="primary" type="submit" onClick={handleRegister}>
         Submit
       </Button>
     </Form>

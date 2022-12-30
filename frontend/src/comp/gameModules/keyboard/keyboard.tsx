@@ -1,8 +1,8 @@
 import { useContext } from "react";
 import { KeyboardRow } from "./keyboardRow";
 import { KeyboardTile } from "./keyboardTile";
-import { boardContext } from "../context/boardContext"
-import { boardType } from "../hooks/useBoard";
+import { boardContext } from "../../../context/boardContext"
+import { boardType } from "../../../hooks/useBoard";
 
 
 export function Keyboard(): JSX.Element {

@@ -1,8 +1,8 @@
 import { useContext } from "react";
-import { boardContext } from "../context/boardContext"
+import { boardContext } from "../../../context/boardContext"
 import { GameTileContainer } from "./gameTileContainer";
 import { GameTile } from "./gameTile";
-import { boardType, gameTileType } from "../hooks/useBoard";
+import { boardType, gameTileType } from "../../../hooks/useBoard";
 
 export function Board(): JSX.Element {
 

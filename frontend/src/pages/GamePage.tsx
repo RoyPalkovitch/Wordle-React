@@ -1,4 +1,4 @@
-import { Game } from "../comp/gameComponent";
+import { Game } from "../comp/gameModules/board/gameComponent";
 
 export function GamePage(): JSX.Element {
 
