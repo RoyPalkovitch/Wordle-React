@@ -8,10 +8,11 @@ export const getWord = (): Promise<string> => {
   return new Promise<string>(resolve => setTimeout(resolve, 1000, 'event'));
 }
 
+
 export const searchCorrectWords =
   (currentFocusedRow: gameTileType[], currentWord: string, keyBoardGrid: gameTileType[][]): { currentFocusedRow: gameTileType[], keyBoardGrid: gameTileType[][] } | boolean => {//search for correct words in the row
     const charCount: { [word: string]: number } = countCharsInWord(currentWord);
-    const letters: string = "qwertyuiopasdfghjklzxcvbnm";
+    const letters: string = "qwertyuiopasdfghjklzxcvbnm".toUpperCase();
 
     for (let index = 0; index < currentFocusedRow.length; index++) {//checking each column in row
       const letter = currentFocusedRow[index].letter;
@@ -32,7 +33,6 @@ export const searchCorrectWords =
       }
       //mark keyboard if letter exist but not in the current place (the row will be colored in the next for loop)
       if (currentWord[index] !== letter) {
-        charCount[letter] -= 1;
         if (!keyboard.classState.includes('correct'))
           keyboard.classState = 'keyboard-tile exist';
         currentFocusedRow[index].classState = 'exist';//exist in the given word
@@ -49,6 +49,7 @@ export const searchCorrectWords =
         if (charCount[letter] !== 0 && keyboard.classState === 'keyboard-tile ') {
           keyboard.classState = 'keyboard-tile exist';
         }
+        continue;
       }
     }
 
