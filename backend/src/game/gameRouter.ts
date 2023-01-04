@@ -1,7 +1,6 @@
 import { Router, Request, Response } from "express";
 import { getWord, searchCorrectWords, gameTileType } from "./gameLogic";
 import bodyParser from 'body-parser';
-import { json } from "stream/consumers";
 
 export const gameRouter = Router();
 interface IboardData {

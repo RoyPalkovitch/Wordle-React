@@ -25,7 +25,6 @@ export function useBoard(): boardType {
 
   const { lengthOfWord, numberOfTries, propChanged }: gameConfigType = useContext(gameConfigContext) as gameConfigType;
 
-
   const [board, setBoard] = useState<gameTileType[][]>([[{ classState: '', letter: '' }]]);
   const [showGameEndPopup, setGameEndPopup] = useState(false);
   const [resetGame, setResetGame] = useState(false);
@@ -47,12 +46,11 @@ export function useBoard(): boardType {
   useEffect(() => {
 
     if (!rendered.current) {
+      //protect against double rendering when not needed
       fetch(`${endPoint}/game`)
         .then(response => response.text())
         .then(response => currentWord.current = response.toUpperCase())
       setGame();
-    } else {
-      rendered.current = false;
     }
 
     document.addEventListener("keydown", handleKeyDown);
@@ -61,6 +59,7 @@ export function useBoard(): boardType {
     // eslint-disable-next-line 
   }, [resetGame, propChanged]);
 
+  // set/reset the game
   const setGame = () => {
     rendered.current = true;
     board.splice(0);
@@ -73,10 +72,9 @@ export function useBoard(): boardType {
     setBoard([...board]);
     setGameEndPopup(false);
     setResetGame(false);
-
-
   }
 
+  //create game board according user confing
   const createBoard = () => {
     if (board.length === numberOfTries.current) {
       return;
@@ -105,6 +103,7 @@ export function useBoard(): boardType {
 
   }
 
+  //create on screen keyboard
   const createKeyboard = () => {
     let letterCount = 0;
 
@@ -139,9 +138,10 @@ export function useBoard(): boardType {
 
   }
 
-
+  //handling keydown on document
   const handleKeyDown = async (e: KeyboardEvent | MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    // return if request have'nt finished
     if (waitingResponse.current) {
       return;
     }
@@ -229,7 +229,6 @@ export function useBoard(): boardType {
     keyBoardGrid.current = colorDataRow.keyBoardGrid;
     return colorDataRow.win;
   }
-
 
   return {
     board,
