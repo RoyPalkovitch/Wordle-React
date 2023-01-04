@@ -10,7 +10,7 @@ export const getWord = (): Promise<string> => {
 
 
 export const searchCorrectWords =
-  (currentFocusedRow: gameTileType[], currentWord: string, keyBoardGrid: gameTileType[][]): { currentFocusedRow: gameTileType[], keyBoardGrid: gameTileType[][] } | boolean => {//search for correct words in the row
+  (currentFocusedRow: gameTileType[], currentWord: string, keyBoardGrid: gameTileType[][]): { currentFocusedRow: gameTileType[], keyBoardGrid: gameTileType[][], win: boolean } | boolean => {//search for correct words in the row
     const charCount: { [word: string]: number } = countCharsInWord(currentWord);
     const letters: string = "qwertyuiopasdfghjklzxcvbnm".toUpperCase();
 
@@ -68,8 +68,8 @@ export const searchCorrectWords =
         currentFocusedRow[index].classState = 'exist';//exist in the given word
       }
     }
-
-    return { currentFocusedRow, keyBoardGrid };
+    const win = checkWin(currentFocusedRow, currentWord);
+    return { currentFocusedRow, keyBoardGrid, win };
   }
 
 const countCharsInWord = (currentWord: string): { [word: string]: number } => {
@@ -94,4 +94,12 @@ const getKeyboardTile = (letter: string, keyBoardGrid: gameTileType[][]): gameTi
     }
   }
   return { classState: '', letter: "" }
+}
+
+const checkWin = (currentFocusedRow: gameTileType[], currentWord: string): boolean => {//check if all the word are correct and in order
+  const win = currentFocusedRow.map(col => (col.letter)).join('');
+  if (win === currentWord) {
+    return true;
+  }
+  return false;
 }

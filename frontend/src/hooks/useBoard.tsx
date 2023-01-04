@@ -165,7 +165,7 @@ export function useBoard(): boardType {
     console.log("Done");
     currentRow.current++;
     currentCol.current = 0;
-    if (checkWin(currentFocusedRow)) {
+    if (win) {
       winOrLose.current = 'Win';
       setGameEndPopup(true);
       rendered.current = false;
@@ -229,15 +229,6 @@ export function useBoard(): boardType {
     keyBoardGrid.current = colorDataRow.keyBoardGrid;
     return colorDataRow.win;
   }
-
-  const checkWin = (currentFocusedRow: gameTileType[]): boolean => {//check if all the word are correct and in order
-    const win = currentFocusedRow.map(col => (col.letter)).join('');
-    if (win === currentWord.current) {
-      return true;
-    }
-    return false;
-  }
-
 
 
   return {
