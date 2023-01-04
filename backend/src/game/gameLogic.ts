@@ -19,37 +19,53 @@ export const searchCorrectWords =
       if (!letters.includes(letter)) {
         return false;
       }
-      const keyboard = getKeyboardTile(letter, keyBoardGrid);
-      if (!keyboard) {
+
+      if (charCount[letter] === 0 || currentWord[index] !== letter) {
         continue;
       }
+
+      const keyboard = getKeyboardTile(letter, keyBoardGrid);
+      if (!keyboard) {
+        return false;
+      }
+
+      //if letter exist
+      charCount[letter] -= 1;
+      currentFocusedRow[index].classState = 'correct';
+      if (charCount[letter] === 0) {
+        keyboard.classState = 'keyboard-tile correct';
+      }
+
+    }
+
+
+    for (let index = 0; index < currentFocusedRow.length; index++) {
+      //mark keyboard if letter exist but not in the current place (the row will be colored in the next for loop)
+      const letter = currentFocusedRow[index].letter;
+      if (!letters.includes(letter)) {
+        return false;
+      }
+
+      const keyboard = getKeyboardTile(letter, keyBoardGrid);
+      if (!keyboard) {
+        return false;
+      }
+
+
       //letter is not in the word
-      if (!currentWord.includes(letter) || charCount[letter] === 0) {
+      if (!currentWord.includes(letter) || (charCount[letter] === 0 && currentFocusedRow[index].classState !== 'correct')) {
         currentFocusedRow[index].classState = 'wrong';
         if (keyboard.classState === 'keyboard-tile ') {
           keyboard.classState += 'wrong';
         }
         continue;
       }
-      //mark keyboard if letter exist but not in the current place (the row will be colored in the next for loop)
-      if (currentWord[index] !== letter) {
+
+      if (letter !== currentWord[index]) {
+        charCount[letter] -= 1;
         if (!keyboard.classState.includes('correct'))
           keyboard.classState = 'keyboard-tile exist';
         currentFocusedRow[index].classState = 'exist';//exist in the given word
-        continue;
-      }
-
-      //if letter exist
-      if (currentWord[index] === letter) {
-        charCount[letter] -= 1;
-        currentFocusedRow[index].classState = 'correct';
-        if (charCount[letter] === 0) {
-          keyboard.classState = 'keyboard-tile correct';
-        }
-        if (charCount[letter] !== 0 && keyboard.classState === 'keyboard-tile ') {
-          keyboard.classState = 'keyboard-tile exist';
-        }
-        continue;
       }
     }
 

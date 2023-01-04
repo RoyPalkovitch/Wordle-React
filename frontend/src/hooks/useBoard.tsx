@@ -27,27 +27,33 @@ export function useBoard(): boardType {
 
 
   const [board, setBoard] = useState<gameTileType[][]>([[{ classState: '', letter: '' }]]);
-  const [showGameEndPopup, setGameEndPopup] = useState<boolean>(false);
-  const [resetGame, setResetGame] = useState<boolean>(false);
+  const [showGameEndPopup, setGameEndPopup] = useState(false);
+  const [resetGame, setResetGame] = useState(false);
 
-  const currentRow = useRef<number>(0);
-  const currentCol = useRef<number>(0);
+  const currentRow = useRef(0);
+  const currentCol = useRef(0);
   const keyBoardGrid = useRef<gameTileType[][]>([[{
     letter: '',
     classState: 'keyboard-tile '
   }]]);
-  const winOrLose = useRef<string>("");
+  const winOrLose = useRef('');
   const currentWord = useRef('');
-
+  const waitingResponse = useRef(false);
+  const rendered = useRef(false);
   const letters: string = "qwertyuiopasdfghjklzxcvbnm";
   const endPoint: string = 'http://localhost:3003';
 
 
   useEffect(() => {
-    const fetchWord = async () => {
-      await setGame();
+
+    if (!rendered.current) {
+      fetch(`${endPoint}/game`)
+        .then(response => response.text())
+        .then(response => currentWord.current = response.toUpperCase())
+      setGame();
+    } else {
+      rendered.current = false;
     }
-    fetchWord();
 
     document.addEventListener("keydown", handleKeyDown);
     return () =>
@@ -55,13 +61,8 @@ export function useBoard(): boardType {
     // eslint-disable-next-line 
   }, [resetGame, propChanged]);
 
-  const getWord = async () => {
-    const request = await fetch(`${endPoint}/game`);
-    return await request.text();
-  }
-
-  const setGame = async () => {
-    currentWord.current = (await getWord()).toUpperCase();
+  const setGame = () => {
+    rendered.current = true;
     board.splice(0);
     keyBoardGrid.current = [];
     currentRow.current = 0;
@@ -72,6 +73,8 @@ export function useBoard(): boardType {
     setBoard([...board]);
     setGameEndPopup(false);
     setResetGame(false);
+
+
   }
 
   const createBoard = () => {
@@ -104,6 +107,7 @@ export function useBoard(): boardType {
 
   const createKeyboard = () => {
     let letterCount = 0;
+
     if (keyBoardGrid.current.length === 3) {
       return;
     }
@@ -138,37 +142,44 @@ export function useBoard(): boardType {
 
   const handleKeyDown = async (e: KeyboardEvent | MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    if (waitingResponse.current) {
+      return;
+    }
+    waitingResponse.current = true;
 
     const letter: string = (e as KeyboardEvent).key ? (e as KeyboardEvent).key : (e as MouseEvent<HTMLButtonElement>).currentTarget.value;
     const currentFocusedRow: gameTileType[] = board[currentRow.current];
-    if (letters.includes(letter)) {
+    if (letters.includes(letter.toLowerCase())) {
       await write(letter, currentFocusedRow);
     }
     if (letter === "Backspace") {
       deleteWord(currentFocusedRow);
     }
+    waitingResponse.current = false;
     setBoard([...board]);
-
 
   }
 
   const shouldMoveRow = async (currentFocusedRow: gameTileType[],) => {
-    await searchCorrectWords(currentFocusedRow);
+    const win = await searchCorrectWords(currentFocusedRow);
     console.log("Done");
     currentRow.current++;
     currentCol.current = 0;
     if (checkWin(currentFocusedRow)) {
       winOrLose.current = 'Win';
       setGameEndPopup(true);
+      rendered.current = false;
       document.removeEventListener('keydown', handleKeyDown);
       return
     }
     if (currentRow.current === 5) {
       winOrLose.current = 'Lose';
       setGameEndPopup(true);
+      rendered.current = false;
       document.removeEventListener('keydown', handleKeyDown);
       return
     }
+    waitingResponse.current = false;
 
   }
 
@@ -177,6 +188,7 @@ export function useBoard(): boardType {
     if (currentCol.current) {
       currentCol.current--;
     }
+    waitingResponse.current = false;
   }
 
   const write = async (letter: string, currentFocusedRow: gameTileType[]) => {
@@ -209,11 +221,13 @@ export function useBoard(): boardType {
         body: JSON.stringify(dataToSend)
       }
     );
-    const colorDataRow = await getCorrectData.json() as { currentFocusedRow: gameTileType[], keyBoardGrid: gameTileType[][] };
+    const colorDataRow = await getCorrectData.json() as
+      { currentFocusedRow: gameTileType[], keyBoardGrid: gameTileType[][], win: boolean };
     colorDataRow.currentFocusedRow.forEach((colorData, i) => {
       currentFocusedRow[i].classState = colorData.classState;
     });
     keyBoardGrid.current = colorDataRow.keyBoardGrid;
+    return colorDataRow.win;
   }
 
   const checkWin = (currentFocusedRow: gameTileType[]): boolean => {//check if all the word are correct and in order
