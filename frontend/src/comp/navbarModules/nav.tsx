@@ -13,15 +13,14 @@ import { GameConfigModal } from "../gameModules/board/gameConfigModal"
 export function Nav(): JSX.Element {
   let navigate = useNavigate();
   let currentLocation = useLocation().pathname;
-  const { currentUser, setCurrentUser }: authType = useContext(AuthContext) as authType;
+  const { currentUser, logOut }: authType = useContext(AuthContext) as authType;
   const [showInfo, setShowInfo] = useState(false);
   const [showConfig, setShowConfig] = useState(false);
   const handleShowInfo = () => setShowInfo(true);
   const handleShowConfig = () => setShowConfig(true);
 
   const handleLogout = () => {
-    if (setCurrentUser)
-      setCurrentUser({ name: '' })
+    logOut();
   }
 
 

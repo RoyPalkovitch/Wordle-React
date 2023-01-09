@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export type authType = {
@@ -7,7 +7,8 @@ export type authType = {
   emailInputRef: React.RefObject<HTMLInputElement>,
   passwordInputRef: React.RefObject<HTMLInputElement>,
   login: (userName: string, password: string) => void,
-  register: (userName: string, password: string) => void
+  register: (userName: string, password: string) => void,
+  logOut: () => void
 }
 
 
@@ -17,11 +18,25 @@ export function useAuth(): authType {
   const emailInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const user = window.localStorage.getItem('user')
+    if (user) {
+      setCurrentUser(JSON.parse(user));
+    }
+  }, [])
+
   const login = (userName: string, password: string) => {
+    const inLocal = window.localStorage.getItem('user');
+    if (inLocal) {
+      setCurrentUser(JSON.parse(inLocal));
+      return;
+    }
     if (checkDB(userName, password)) {
       fetch('https://jsonplaceholder.typicode.com/users/1')
         .then(response => response.json())
         .then((user) => {
+          window.localStorage.setItem('user', JSON.stringify(user));
           setCurrentUser(user);
           navigate('/');
         })
@@ -38,6 +53,11 @@ export function useAuth(): authType {
       alert("User already taken")
 
     }
+  }
+
+  const logOut = () => {
+    window.localStorage.removeItem('user');
+    setCurrentUser({ name: '' });
   }
 
   const checkDB = (userName: string, password: string): boolean => {
@@ -58,6 +78,7 @@ export function useAuth(): authType {
     passwordInputRef,
     setCurrentUser,
     register,
-    login
+    login,
+    logOut
   })
 }
