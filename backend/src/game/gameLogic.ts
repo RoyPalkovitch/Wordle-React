@@ -14,6 +14,7 @@ export const searchCorrectWords =
     const charCount: { [word: string]: number } = countCharsInWord(currentWord);
     const letters: string = "qwertyuiopasdfghjklzxcvbnm".toUpperCase();
 
+    //marking the correct ones
     for (let index = 0; index < currentFocusedRow.length; index++) {//checking each column in row
       const letter = currentFocusedRow[index].letter;
       if (!letters.includes(letter)) {
@@ -40,7 +41,7 @@ export const searchCorrectWords =
 
 
     for (let index = 0; index < currentFocusedRow.length; index++) {
-      //mark keyboard if letter exist but not in the current place (the row will be colored in the next for loop)
+      //mark keyboard if letter exist but not in the current place
       const letter = currentFocusedRow[index].letter;
       if (!letters.includes(letter)) {
         return false;
@@ -68,6 +69,7 @@ export const searchCorrectWords =
         currentFocusedRow[index].classState = 'exist';//exist in the given word
       }
     }
+
     const win = checkWin(currentFocusedRow, currentWord);
     return { currentFocusedRow, keyBoardGrid, win };
   }
@@ -96,7 +98,8 @@ const getKeyboardTile = (letter: string, keyBoardGrid: gameTileType[][]): gameTi
   return { classState: '', letter: "" }
 }
 
-const checkWin = (currentFocusedRow: gameTileType[], currentWord: string): boolean => {//check if all the word are correct and in order
+//check if all the word are correct and in order
+const checkWin = (currentFocusedRow: gameTileType[], currentWord: string): boolean => {
   const win = currentFocusedRow.map(col => (col.letter)).join('');
   if (win === currentWord) {
     return true;
