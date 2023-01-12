@@ -1,17 +1,14 @@
+import { gameTileType } from "../controllers/game/gameController";
 
-export type gameTileType = {
-  classState: string,
-  letter: string
-}
+export class GameService {
+  constructor() { }
 
-export const getWord = (): Promise<string> => {
-  return new Promise<string>(resolve => setTimeout(resolve, 1000, 'event'));
-}
+  getWord(): Promise<string> {
+    return new Promise<string>(resolve => setTimeout(resolve, 1000, 'event'));
+  }
 
-
-export const searchCorrectWords =
-  (currentFocusedRow: gameTileType[], currentWord: string, keyBoardGrid: gameTileType[][]): { currentFocusedRow: gameTileType[], keyBoardGrid: gameTileType[][], win: boolean } | boolean => {//search for correct words in the row
-    const charCount: { [word: string]: number } = countCharsInWord(currentWord);
+  searchCorrectWords(currentFocusedRow: gameTileType[], currentWord: string, keyBoardGrid: gameTileType[][]): { currentFocusedRow: gameTileType[], keyBoardGrid: gameTileType[][], win: boolean } | boolean {
+    const charCount: { [word: string]: number } = this.countCharsInWord(currentWord);
     const letters: string = "qwertyuiopasdfghjklzxcvbnm".toUpperCase();
 
     //marking the correct ones
@@ -25,7 +22,7 @@ export const searchCorrectWords =
         continue;
       }
 
-      const keyboard = getKeyboardTile(letter, keyBoardGrid);
+      const keyboard = this.getKeyboardTile(letter, keyBoardGrid);
       if (!keyboard) {
         return false;
       }
@@ -47,7 +44,7 @@ export const searchCorrectWords =
         return false;
       }
 
-      const keyboard = getKeyboardTile(letter, keyBoardGrid);
+      const keyboard = this.getKeyboardTile(letter, keyBoardGrid);
       if (!keyboard) {
         return false;
       }
@@ -70,39 +67,42 @@ export const searchCorrectWords =
       }
     }
 
-    const win = checkWin(currentFocusedRow, currentWord);
+    const win = this.checkWin(currentFocusedRow, currentWord);
     return { currentFocusedRow, keyBoardGrid, win };
   }
 
-const countCharsInWord = (currentWord: string): { [word: string]: number } => {
-  const count: { [word: string]: number } = {};
-  for (let i = 0; i < currentWord.length; i++) {
-    if (count[currentWord[i]])
-      count[currentWord[i]] += 1;
-    else {
-      count[currentWord[i]] = 1;
-    }
-  }
-  return count;
-}
-
-const getKeyboardTile = (letter: string, keyBoardGrid: gameTileType[][]): gameTileType => {
-  for (let i = 0; i < keyBoardGrid.length; i++) {
-    for (let j = 0; j < keyBoardGrid[i].length; j++) {
-      if (letter === keyBoardGrid[i][j].letter) {
-
-        return keyBoardGrid[i][j];
+  private countCharsInWord(currentWord: string): { [word: string]: number } {
+    const count: { [word: string]: number } = {};
+    for (let i = 0; i < currentWord.length; i++) {
+      if (count[currentWord[i]])
+        count[currentWord[i]] += 1;
+      else {
+        count[currentWord[i]] = 1;
       }
     }
+    return count;
   }
-  return { classState: '', letter: "" }
-}
 
-//check if all the word are correct and in order
-const checkWin = (currentFocusedRow: gameTileType[], currentWord: string): boolean => {
-  const win = currentFocusedRow.map(col => (col.letter)).join('');
-  if (win === currentWord) {
-    return true;
+  private getKeyboardTile(letter: string, keyBoardGrid: gameTileType[][]): gameTileType {
+    for (let i = 0; i < keyBoardGrid.length; i++) {
+      for (let j = 0; j < keyBoardGrid[i].length; j++) {
+        if (letter === keyBoardGrid[i][j].letter) {
+
+          return keyBoardGrid[i][j];
+        }
+      }
+    }
+    return { classState: '', letter: "" }
   }
-  return false;
+
+
+  //check if all the word are correct and in order
+  private checkWin(currentFocusedRow: gameTileType[], currentWord: string): boolean {
+    const win = currentFocusedRow.map(col => (col.letter)).join('');
+    if (win === currentWord) {
+      return true;
+    }
+    return false;
+  }
+
 }
