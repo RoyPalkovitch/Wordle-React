@@ -79,20 +79,8 @@ export function useBoard(): boardType {
     if (board.length === numberOfTries.current) {
       return;
     }
-    let numOfTries: number;
-    let length: number;
-    if (numberOfTries.current === null) {
-      numOfTries = 5;
-    } else {
-      numOfTries = numberOfTries.current;
-    }
-
-    if (lengthOfWord.current === null) {
-      length = 5;
-    } else {
-      length = lengthOfWord.current;
-    }
-
+    const numOfTries = numberOfTries.current ? numberOfTries.current : 5;
+    const length = lengthOfWord.current ? lengthOfWord.current : 5;
 
     for (let i = 0; i < numOfTries; i++) {
       board.push([]);
