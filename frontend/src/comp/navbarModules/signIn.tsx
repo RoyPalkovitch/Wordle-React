@@ -13,6 +13,7 @@ export function SignIn(props: ModalpropsType) {
 
   const handleLogin = () => {
     if (emailInputRef.current && passwordInputRef.current && login) {
+      props.onHide();
       login(emailInputRef.current.value, passwordInputRef.current.value);
     }
   }

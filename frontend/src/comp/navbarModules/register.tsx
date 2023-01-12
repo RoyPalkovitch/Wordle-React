@@ -12,6 +12,7 @@ export function Register(props: ModalpropsType) {
 
   const handleRegister = () => {
     if (emailInputRef.current && passwordInputRef.current && register) {
+      props.onHide();
       register(emailInputRef.current.value, passwordInputRef.current.value);
     }
     //setstate error

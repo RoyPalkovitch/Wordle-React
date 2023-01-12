@@ -26,6 +26,7 @@ export function Nav(): JSX.Element {
   const handleShowConfig = () => setShowConfig(true);
 
   const handleLogout = () => {
+    console.log(showRegister);
     logOut();
   }
 
