@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { AuthContext } from "../../context/authContext";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
@@ -9,7 +9,9 @@ import { Modal } from "react-bootstrap";
 export function Register(props: ModalpropsType) {
 
   const { register, emailInputRef, passwordInputRef }: authType = useContext(AuthContext) as authType;
+  useEffect(() => {
 
+  })
   const handleRegister = () => {
     if (emailInputRef.current && passwordInputRef.current && register) {
       props.onHide();
