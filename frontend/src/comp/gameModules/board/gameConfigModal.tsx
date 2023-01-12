@@ -2,13 +2,10 @@ import Modal from 'react-bootstrap/Modal';
 import { useContext, useRef, useState } from 'react';
 import { gameConfigContext } from '../../../context/gameConfigContext'
 import { gameConfigType } from "../../../hooks/useGameConfig";
+import { ModalpropsType } from '../../navbarModules/navTypes';
 
-type propsType = {
-  show: boolean,
-  onHide: () => void
-}
 
-export function GameConfigModal(props: propsType): JSX.Element {
+export function GameConfigModal(props: ModalpropsType): JSX.Element {
   const { changeConfig, lengthOfWord, numberOfTries }: gameConfigType = useContext(gameConfigContext) as gameConfigType;
   const [changed, setChanged] = useState(false);
   const wordLengthRef = useRef<HTMLInputElement>(null);

@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import { authType } from "../../hooks/useAuth";
+import { authType } from "../../hooks/types/authType";
 import { AuthContext } from "../../context/authContext";
 import { ModalpropsType } from "./navTypes";
 import { Modal } from "react-bootstrap";

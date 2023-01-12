@@ -1,26 +1,8 @@
 import { useState, useEffect, useRef, useContext, MouseEvent } from "react";
 import { gameConfigContext } from '../context/gameConfigContext';
 import { gameConfigType } from "./useGameConfig";
-
-export type gameTileType = {
-  classState: string,
-  letter: string
-}
-
-export type boardType = {
-  board: gameTileType[][],
-  letters: string,
-  showGameEndPopup: boolean,
-  currentRow: React.MutableRefObject<number>,
-  currentCol: React.MutableRefObject<number>,
-  keyBoardGrid: React.MutableRefObject<gameTileType[][]>,
-  winOrLose: React.MutableRefObject<string>,
-  setResetGame: React.Dispatch<React.SetStateAction<boolean>>,
-  handleKeyDown: (e: KeyboardEvent | MouseEvent<HTMLButtonElement>) => void
-}
-
-
-
+import { gameTileType } from "./types/gameTileType";
+import { boardType } from "./types/boardType";
 export function useBoard(): boardType {
 
   const { lengthOfWord, numberOfTries, propChanged }: gameConfigType = useContext(gameConfigContext) as gameConfigType;
@@ -45,7 +27,7 @@ export function useBoard(): boardType {
 
   useEffect(() => {
 
-    if (!rendered.current) {
+    if (!rendered.current || propChanged) {
       //protect against double rendering when not needed
       fetch(`${endPoint}/game`)
         .then(response => response.text())

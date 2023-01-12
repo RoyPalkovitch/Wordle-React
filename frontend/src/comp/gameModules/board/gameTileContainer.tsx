@@ -1,9 +1,5 @@
 
 
-type propsType = {
-  children: JSX.Element[]
-}
-
-export function GameTileContainer(props: propsType): JSX.Element {
-  return (<div className="row">{props.children}</div>)
+export function GameTileContainer({ children }: { children: JSX.Element[] }): JSX.Element {
+  return (<div className="row">{children}</div>)
 }

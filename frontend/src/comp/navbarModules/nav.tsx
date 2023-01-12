@@ -1,7 +1,7 @@
 import { Button } from "react-bootstrap";
 import Navbar from 'react-bootstrap/Navbar';
 import { useState, useContext } from "react";
-import { authType } from "../../hooks/useAuth";
+import { authType } from "../../hooks/types/authType";
 import Container from 'react-bootstrap/Container';
 import { InfoModalPopup } from "./info";
 import { AuthContext } from "../../context/authContext";

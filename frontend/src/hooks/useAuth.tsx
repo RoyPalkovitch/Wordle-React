@@ -1,15 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { authType } from "./types/authType";
 
-export type authType = {
-  currentUser: { name: string },
-  setCurrentUser: React.Dispatch<React.SetStateAction<{ name: string; }>>,
-  emailInputRef: React.RefObject<HTMLInputElement>,
-  passwordInputRef: React.RefObject<HTMLInputElement>,
-  login: (userName: string, password: string) => void,
-  register: (userName: string, password: string) => void,
-  logOut: () => void
-}
 
 
 export function useAuth(): authType {

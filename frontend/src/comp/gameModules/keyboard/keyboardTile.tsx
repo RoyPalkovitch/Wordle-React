@@ -1,6 +1,6 @@
 import { useContext, MouseEvent } from "react";
 import { boardContext } from "../../../context/boardContext";
-import { boardType } from "../../../hooks/useBoard";
+import { boardType } from "../../../hooks/types/boardType";
 
 type propsType = {
   key: string,

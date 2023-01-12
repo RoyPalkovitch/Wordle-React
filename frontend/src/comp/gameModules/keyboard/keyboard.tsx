@@ -2,8 +2,7 @@ import { useContext } from "react";
 import { KeyboardRow } from "./keyboardRow";
 import { KeyboardTile } from "./keyboardTile";
 import { boardContext } from "../../../context/boardContext"
-import { boardType } from "../../../hooks/useBoard";
-
+import { boardType } from "../../../hooks/types/boardType";
 
 export function Keyboard(): JSX.Element {
   const { keyBoardGrid }: boardType = useContext(boardContext) as boardType;

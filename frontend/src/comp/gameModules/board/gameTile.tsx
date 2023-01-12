@@ -1,6 +1,5 @@
 import React from "react";
-import { gameTileType } from "../../../hooks/useBoard"
-
+import { gameTileType } from "../../../hooks/types/gameTileType";
 
 function GameTileComp({ classState, letter }: gameTileType): JSX.Element {
   return (<div className={classState}>{letter} </div>)

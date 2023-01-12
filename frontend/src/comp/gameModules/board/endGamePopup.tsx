@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import Modal from 'react-bootstrap/Modal';
 import { Button } from 'react-bootstrap';
 import { boardContext } from "../../../context/boardContext";
-import { boardType } from "../../../hooks/useBoard";
+import { boardType } from "../../../hooks/types/boardType";
 
 export function EndGamePopup(): JSX.Element {
   const [show, setShow] = useState(false);
