@@ -3,10 +3,12 @@ import Navbar from 'react-bootstrap/Navbar';
 import { useState, useContext } from "react";
 import { authType } from "../../hooks/useAuth";
 import Container from 'react-bootstrap/Container';
-import { InfoModalPopup } from "./infoModalPopup";
+import { InfoModalPopup } from "./info";
 import { AuthContext } from "../../context/authContext";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { GameConfigModal } from "../gameModules/board/gameConfigModal"
+import { SignIn } from "./signIn";
+import { Register } from "./register";
 
 
 
@@ -16,6 +18,10 @@ export function Nav(): JSX.Element {
   const { currentUser, logOut }: authType = useContext(AuthContext) as authType;
   const [showInfo, setShowInfo] = useState(false);
   const [showConfig, setShowConfig] = useState(false);
+  const [showSignIn, setShowSignIn] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
+  const handleShowSignIn = () => setShowSignIn(true);
+  const handleShowRegister = () => setShowRegister(true);
   const handleShowInfo = () => setShowInfo(true);
   const handleShowConfig = () => setShowConfig(true);
 
@@ -41,11 +47,14 @@ export function Nav(): JSX.Element {
             (
               <>
                 <Navbar.Text className="px-5">
-                  <Button onClick={() => { navigate('/sign-in') }} >Sign In</Button>
+                  <Button onClick={handleShowSignIn}>Sign In</Button>
+                  <SignIn show={showSignIn} onHide={() => setShowSignIn(false)} />
                 </Navbar.Text>
                 <Navbar.Text className="px-5">
-                  <Button onClick={() => { navigate('/register') }} >Register</Button>
+                  <Button onClick={handleShowRegister}>Register</Button>
+                  <Register show={showRegister} onHide={() => setShowRegister(false)} />
                 </Navbar.Text>
+
               </>
             )}
 
