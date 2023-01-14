@@ -66,15 +66,14 @@ export function useBoard(): boardType {
 
   //create game board according user confing
   const createBoard = () => {
-    if (board.length === numberOfTries.current) {
+    if (board.length === numberOfTries.current!) {
       return;
     }
-    const numOfTries = numberOfTries.current ? numberOfTries.current : 5;
-    const length = lengthOfWord.current ? lengthOfWord.current : 5;
 
-    for (let i = 0; i < numOfTries; i++) {
+
+    for (let i = 0; i < numberOfTries.current!; i++) {
       board.push([]);
-      for (let j = 0; j < length; j++) {
+      for (let j = 0; j < lengthOfWord.current!; j++) {
         board[i].push({ classState: '', letter: '' });
       }
     }
@@ -143,37 +142,27 @@ export function useBoard(): boardType {
     console.log("Done");
     currentRow.current++;
     currentCol.current = 0;
-    if (win) {
-      winOrLose.current = 'Win';
+    if (win || currentRow.current === numberOfTries.current!) {
+      winOrLose.current = win ? "Win" : "Lose";
       setGameEndPopup(true);
       rendered.current = false;
       document.removeEventListener('keydown', handleKeyDown);
       return
     }
-    if (currentRow.current === 5) {
-      winOrLose.current = 'Lose';
-      setGameEndPopup(true);
-      rendered.current = false;
-      document.removeEventListener('keydown', handleKeyDown);
-      return
-    }
-    waitingResponse.current = false;
-
   }
 
   const deleteWord = (currentFocusedRow: gameTileType[]) => {
     currentFocusedRow[currentCol.current].letter = '';
-    if (currentCol.current) {
+    if (currentCol.current > 0) {
       currentCol.current--;
     }
-    waitingResponse.current = false;
   }
 
   const write = async (letter: string, currentFocusedRow: gameTileType[]) => {
     if (!currentFocusedRow[currentCol.current].letter) {
       currentFocusedRow[currentCol.current].letter = letter.toUpperCase();
       currentCol.current++;
-      if (currentCol.current > 4) {
+      if (currentCol.current > lengthOfWord.current! - 1) {
         await shouldMoveRow(currentFocusedRow);
       }
       return;
@@ -181,7 +170,7 @@ export function useBoard(): boardType {
     if (currentFocusedRow[currentCol.current].letter) {
       currentCol.current++;
       currentFocusedRow[currentCol.current].letter = letter.toUpperCase();
-      if (currentCol.current === 4) {
+      if (currentCol.current === lengthOfWord.current! - 1) {
         await shouldMoveRow(currentFocusedRow);
       }
       return;
