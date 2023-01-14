@@ -1,11 +1,14 @@
 import { useState, useEffect, useRef, useContext, MouseEvent } from "react";
 import { gameConfigContext } from '../context/gameConfigContext';
-import { gameConfigType } from "./useGameConfig";
+import { gameConfigType } from "./types/gameConfigType";
 import { gameTileType } from "./types/gameTileType";
 import { boardType } from "./types/boardType";
+import { modalObsType } from "./types/modalObsType";
+import { ModalObsContext } from "../context/modalObsContext";
 export function useBoard(): boardType {
 
   const { lengthOfWord, numberOfTries, propChanged }: gameConfigType = useContext(gameConfigContext) as gameConfigType;
+  const { modalObs }: modalObsType = useContext(ModalObsContext) as modalObsType;
 
   const [board, setBoard] = useState<gameTileType[][]>([[{ classState: '', letter: '' }]]);
   const [showGameEndPopup, setGameEndPopup] = useState(false);
@@ -26,7 +29,6 @@ export function useBoard(): boardType {
 
 
   useEffect(() => {
-
     if (!rendered.current || propChanged) {
       //protect against double rendering when not needed
       fetch(`${endPoint}/game`)
@@ -34,12 +36,18 @@ export function useBoard(): boardType {
         .then(response => currentWord.current = response.toUpperCase())
       setGame();
     }
+    if (!modalObs) {
+      //add event if modal is closed
+      document.addEventListener("keydown", handleKeyDown);
+      return () =>
+        document.removeEventListener('keydown', handleKeyDown);
+    }
+    //remove event if modal is open
+    document.removeEventListener('keydown', handleKeyDown);
 
-    document.addEventListener("keydown", handleKeyDown);
-    return () =>
-      document.removeEventListener('keydown', handleKeyDown);
     // eslint-disable-next-line 
-  }, [resetGame, propChanged]);
+  }, [resetGame, propChanged, modalObs]);
+
 
   // set/reset the game
   const setGame = () => {
@@ -51,9 +59,9 @@ export function useBoard(): boardType {
     winOrLose.current = '';
     createKeyboard();
     createBoard();
-    setBoard([...board]);
     setGameEndPopup(false);
     setResetGame(false);
+    setBoard([...board]);
   }
 
   //create game board according user confing
@@ -162,17 +170,21 @@ export function useBoard(): boardType {
   }
 
   const write = async (letter: string, currentFocusedRow: gameTileType[]) => {
-
-    if (currentFocusedRow[currentCol.current].letter && currentFocusedRow[currentCol.current + 1] !== undefined) {
-      currentCol.current++;
-      currentFocusedRow[currentCol.current].letter = letter.toUpperCase();
-    } else if (currentFocusedRow[currentCol.current + 1]) {
+    if (!currentFocusedRow[currentCol.current].letter) {
       currentFocusedRow[currentCol.current].letter = letter.toUpperCase();
       currentCol.current++;
-
-    } else {
+      if (currentCol.current > 4) {
+        await shouldMoveRow(currentFocusedRow);
+      }
+      return;
+    }
+    if (currentFocusedRow[currentCol.current].letter) {
+      currentCol.current++;
       currentFocusedRow[currentCol.current].letter = letter.toUpperCase();
-      await shouldMoveRow(currentFocusedRow);
+      if (currentCol.current === 4) {
+        await shouldMoveRow(currentFocusedRow);
+      }
+      return;
     }
   }
 

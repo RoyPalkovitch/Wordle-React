@@ -9,6 +9,8 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import { GameConfigModal } from "../gameModules/board/gameConfigModal"
 import { SignIn } from "./signIn";
 import { Register } from "./register";
+import { modalObsType } from "../../hooks/types/modalObsType";
+import { ModalObsContext } from "../../context/modalObsContext";
 
 
 
@@ -16,14 +18,16 @@ export function Nav(): JSX.Element {
   let navigate = useNavigate();
   let currentLocation = useLocation().pathname;
   const { currentUser, logOut }: authType = useContext(AuthContext) as authType;
+  const { setModalObs }: modalObsType = useContext(ModalObsContext) as modalObsType;
   const [showInfo, setShowInfo] = useState(false);
   const [showConfig, setShowConfig] = useState(false);
   const [showSignIn, setShowSignIn] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
-  const handleShowSignIn = () => setShowSignIn(true);
-  const handleShowRegister = () => setShowRegister(true);
-  const handleShowInfo = () => setShowInfo(true);
-  const handleShowConfig = () => setShowConfig(true);
+
+  const handleShow = (setShow: (value: React.SetStateAction<boolean>) => void, value: boolean) => {
+    setModalObs(value);
+    setShow(value);
+  }
 
   const handleLogout = () => {
     console.log(showRegister);
@@ -48,26 +52,26 @@ export function Nav(): JSX.Element {
             (
               <>
                 <Navbar.Text className="px-5">
-                  <Button onClick={handleShowSignIn}>Sign In</Button>
-                  <SignIn show={showSignIn} onHide={() => setShowSignIn(false)} />
+                  <Button onClick={() => handleShow(setShowSignIn, true)}>Sign In</Button>
+                  <SignIn show={showSignIn} onHide={() => handleShow(setShowSignIn, false)} />
                 </Navbar.Text>
                 <Navbar.Text className="px-5">
-                  <Button onClick={handleShowRegister}>Register</Button>
-                  <Register show={showRegister} onHide={() => setShowRegister(false)} />
+                  <Button onClick={() => handleShow(setShowRegister, true)}>Register</Button>
+                  <Register show={showRegister} onHide={() => handleShow(setShowRegister, false)} />
                 </Navbar.Text>
 
               </>
             )}
 
           <Navbar.Text className="px-5">
-            <Button onClick={handleShowInfo}>Info</Button>
-            <InfoModalPopup show={showInfo} onHide={() => setShowInfo(false)} />
+            <Button onClick={() => handleShow(setShowInfo, true)}>Info</Button>
+            <InfoModalPopup show={showInfo} onHide={() => handleShow(setShowInfo, false)} />
           </Navbar.Text>
           <>
             {currentLocation === '/game' ? (
               <Navbar.Text className="px-5">
-                <Button onClick={handleShowConfig}>Config</Button>
-                <GameConfigModal show={showConfig} onHide={() => setShowConfig(false)} />
+                <Button onClick={() => handleShow(setShowConfig, true)}>Config</Button>
+                <GameConfigModal show={showConfig} onHide={() => handleShow(setShowConfig, false)} />
               </Navbar.Text>
             ) : null}
 
