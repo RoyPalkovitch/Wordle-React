@@ -1,6 +1,7 @@
 import { useContext, MouseEvent } from "react";
 import { boardContext } from "../../../context/boardContext";
 import { boardType } from "../../../hooks/types/boardType";
+import { memo } from "react";
 
 type propsType = {
   key: string,
@@ -12,7 +13,7 @@ export type currentKeyboardKeyType = {
   letter: string
 }
 
-export function KeyboardTile(props: propsType): JSX.Element {
+function KeyboardTileComp(props: propsType): JSX.Element {
 
   const { handleKeyDown }: boardType = useContext(boardContext) as boardType;
 
@@ -24,3 +25,4 @@ export function KeyboardTile(props: propsType): JSX.Element {
     <button className={props.currentKey.classState} value={props.currentKey.letter} onClick={handleOnClick}>{props.currentKey.letter}</button>
   )
 }
+export const KeyboardTile = memo(KeyboardTileComp);
