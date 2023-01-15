@@ -95,7 +95,6 @@ export class GameService {
     return { classState: '', letter: "" }
   }
 
-
   //check if all the word are correct and in order
   private checkWin(currentFocusedRow: gameTileType[], currentWord: string): boolean {
     const win = currentFocusedRow.map(col => (col.letter)).join('');

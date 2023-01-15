@@ -1,19 +1,17 @@
 import { Router, Request, Response } from "express";
 import bodyParser from 'body-parser';
 import { GameController, IboardData } from "./gameController";
-export const gameRouter = Router();
+export const gameEndPoint = Router();
 
 
 const gameController = new GameController();
 
-gameRouter.get('/', (req: Request, res: Response) => {
-  gameController.get(req, res);
+gameEndPoint.get('/', (req: Request, res: Response) => {
+  gameController.get(res);
 });
 
-gameRouter.put('/searchcorrectwords', bodyParser.json(), (req: Request, res: Response) => {
-  const data: IboardData = req.body;
-  gameController.put(res, data);
-
+gameEndPoint.put('/searchcorrectwords', bodyParser.json(), (req: Request, res: Response) => {
+  gameController.put(req, res);
 });
 
 

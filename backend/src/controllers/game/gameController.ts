@@ -19,13 +19,13 @@ export class GameController {
     this.gameService = new GameService();
   }
 
-  async get(req: Request, res: Response) {
+  async get(res: Response) {
     const word = await this.gameService.getWord();
     res.send(word);
   }
 
-  put(res: Response, data: IboardData) {
-
+  put(req: Request, res: Response) {
+    const data: IboardData = req.body;
     const result = this.gameService.searchCorrectWords(data.currentFocusedRow, data.currentWord, data.keyBoardGrid);
     if (!result) {
       res.sendStatus(400);
