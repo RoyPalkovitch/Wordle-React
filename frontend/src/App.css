@@ -1,5 +1,4 @@
 body > div {
-  margin: auto;
   display: grid;
   grid-template-areas: "header" "main";
   min-height: 100vh;
@@ -9,6 +8,8 @@ body > div header {
 }
 body > div main {
   grid-area: main;
+  width: 500px;
+  margin: auto;
 }
 body > div #popup {
   grid-column: 1/1;
@@ -94,7 +95,7 @@ body > div #popup div button:hover {
   font-size: 20px;
 }
 .guess-container .row .col.game-tile.focus {
-  background: red;
+  animation: blinkAnimation 2s infinite linear;
 }
 
 .correct {
@@ -109,6 +110,15 @@ body > div #popup div button:hover {
 .wrong {
   background: grey;
   color: white;
+}
+
+@keyframes blinkAnimation {
+  50% {
+    opacity: 0.5;
+  }
+  80% {
+    opacity: 0.2;
+  }
 }
 
 /*# sourceMappingURL=App.css.map */
