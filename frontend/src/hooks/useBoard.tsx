@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useContext, MouseEvent } from "react";
+import { useState, useEffect, useRef, useContext, MouseEvent, useCallback } from "react";
 import { gameConfigContext } from '../context/gameConfigContext';
 import { gameConfigType } from "./types/gameConfigType";
 import { gameTileType } from "./types/gameTileType";
@@ -8,7 +8,7 @@ import { ModalObsContext } from "../context/modalObsContext";
 export function useBoard(): boardType {
 
   const { lengthOfWord, numberOfTries, propChanged }: gameConfigType = useContext(gameConfigContext) as gameConfigType;
-  const { modalObs }: modalObsType = useContext(ModalObsContext) as modalObsType;
+  const { modalObs, setModalObs }: modalObsType = useContext(ModalObsContext) as modalObsType;
 
   const [board, setBoard] = useState<gameTileType[][]>([[{ classState: '', letter: '' }]]);
   const [showGameEndPopup, setGameEndPopup] = useState(false);
@@ -26,46 +26,8 @@ export function useBoard(): boardType {
   const rendered = useRef(false);
   const letters: string = "qwertyuiopasdfghjklzxcvbnm";
   const endPoint: string = 'http://localhost:3003';
-
-
-  useEffect(() => {
-    if (!rendered.current || propChanged) {
-      //protect against double rendering when not needed
-      fetch(`${endPoint}/game`)
-        .then(response => response.text())
-        .then(response => currentWord.current = response.toUpperCase())
-      setGame();
-    }
-    if (!modalObs) {
-      //add event if modal is closed
-      document.addEventListener("keydown", handleKeyDown);
-      return () =>
-        document.removeEventListener('keydown', handleKeyDown);
-    }
-    //remove event if modal is open
-    document.removeEventListener('keydown', handleKeyDown);
-
-    // eslint-disable-next-line 
-  }, [resetGame, propChanged, modalObs]);
-
-
-  // set/reset the game
-  const setGame = () => {
-    rendered.current = true;
-    board.splice(0);
-    keyBoardGrid.current = [];
-    currentRow.current = 0;
-    currentCol.current = 0;
-    winOrLose.current = '';
-    createKeyboard();
-    createBoard();
-    setGameEndPopup(false);
-    setResetGame(false);
-    setBoard([...board]);
-  }
-
   //create game board according user confing
-  const createBoard = () => {
+  const createBoard = useCallback(() => {
     if (board.length === numberOfTries.current!) {
       return;
     }
@@ -78,7 +40,7 @@ export function useBoard(): boardType {
       }
     }
 
-  }
+  }, [board, lengthOfWord, numberOfTries])
 
   //create on screen keyboard
   const createKeyboard = () => {
@@ -115,8 +77,40 @@ export function useBoard(): boardType {
 
   }
 
+  const shouldMoveRow = useCallback(async (currentFocusedRow: gameTileType[],) => {
+    const win = await searchCorrectWords(currentFocusedRow);
+    console.log("Done");
+    currentRow.current++;
+    currentCol.current = 0;
+    if (win || currentRow.current === numberOfTries.current!) {
+      winOrLose.current = win ? "Win" : "Lose";
+      setGameEndPopup(true);
+      setModalObs(true);
+      return
+    }
+  }, [numberOfTries, setModalObs]);
+
+  const write = useCallback(async (letter: string, currentFocusedRow: gameTileType[]) => {
+    if (!currentFocusedRow[currentCol.current].letter) {
+      currentFocusedRow[currentCol.current].letter = letter.toUpperCase();
+      currentCol.current++;
+      if (currentCol.current > lengthOfWord.current! - 1) {
+        await shouldMoveRow(currentFocusedRow);
+      }
+      return;
+    }
+    if (currentFocusedRow[currentCol.current].letter) {
+      currentCol.current++;
+      currentFocusedRow[currentCol.current].letter = letter.toUpperCase();
+      if (currentCol.current === lengthOfWord.current! - 1) {
+        await shouldMoveRow(currentFocusedRow);
+      }
+      return;
+    }
+  }, [shouldMoveRow, lengthOfWord]);
+
   //handling keydown on document
-  const handleKeyDown = async (e: KeyboardEvent | MouseEvent<HTMLButtonElement>) => {
+  const handleKeyDown = useCallback(async (e: KeyboardEvent | MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     // return if request have'nt finished
     if (waitingResponse.current) {
@@ -135,21 +129,10 @@ export function useBoard(): boardType {
     waitingResponse.current = false;
     setBoard([...board]);
 
-  }
+  }, [write, board])
 
-  const shouldMoveRow = async (currentFocusedRow: gameTileType[],) => {
-    const win = await searchCorrectWords(currentFocusedRow);
-    console.log("Done");
-    currentRow.current++;
-    currentCol.current = 0;
-    if (win || currentRow.current === numberOfTries.current!) {
-      winOrLose.current = win ? "Win" : "Lose";
-      setGameEndPopup(true);
-      rendered.current = false;
-      document.removeEventListener('keydown', handleKeyDown);
-      return
-    }
-  }
+
+
 
   const deleteWord = (currentFocusedRow: gameTileType[]) => {
     currentFocusedRow[currentCol.current].letter = '';
@@ -158,24 +141,7 @@ export function useBoard(): boardType {
     }
   }
 
-  const write = async (letter: string, currentFocusedRow: gameTileType[]) => {
-    if (!currentFocusedRow[currentCol.current].letter) {
-      currentFocusedRow[currentCol.current].letter = letter.toUpperCase();
-      currentCol.current++;
-      if (currentCol.current > lengthOfWord.current! - 1) {
-        await shouldMoveRow(currentFocusedRow);
-      }
-      return;
-    }
-    if (currentFocusedRow[currentCol.current].letter) {
-      currentCol.current++;
-      currentFocusedRow[currentCol.current].letter = letter.toUpperCase();
-      if (currentCol.current === lengthOfWord.current! - 1) {
-        await shouldMoveRow(currentFocusedRow);
-      }
-      return;
-    }
-  }
+
 
   const searchCorrectWords = async (currentFocusedRow: gameTileType[]) => {//search for correct words in the row
     const dataToSend = {
@@ -201,6 +167,43 @@ export function useBoard(): boardType {
     return colorDataRow.win;
   }
 
+
+  // set/reset the game
+  const setGame = useCallback(() => {
+    rendered.current = true;
+    board.splice(0);
+    keyBoardGrid.current = [];
+    currentRow.current = 0;
+    currentCol.current = 0;
+    winOrLose.current = '';
+    createKeyboard();
+    createBoard();
+    setGameEndPopup(false);
+    setResetGame(false);
+    setBoard([...board]);
+  }, [board, setBoard, createBoard])
+
+  useEffect(() => {
+    if (!rendered.current || propChanged) {
+      //protect against double rendering when not needed
+      fetch(`${endPoint}/game`)
+        .then(response => response.text())
+        .then(response => currentWord.current = response.toUpperCase())
+      setGame();
+    }
+    if (!modalObs) {
+      //add event if modal is closed
+      document.addEventListener("keydown", handleKeyDown);
+      return () =>
+        document.removeEventListener('keydown', handleKeyDown);
+    }
+    //remove event if modal is open
+    document.removeEventListener('keydown', handleKeyDown);
+
+  }, [resetGame, propChanged, modalObs, handleKeyDown, setGame]);
+
+
+
   return {
     board,
     currentRow,
@@ -209,6 +212,7 @@ export function useBoard(): boardType {
     keyBoardGrid,
     showGameEndPopup,
     winOrLose,
+    rendered,
     setResetGame,
     handleKeyDown
   }

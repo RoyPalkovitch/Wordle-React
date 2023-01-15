@@ -4,6 +4,7 @@ import { gameTileType } from "./gameTileType"
 export type boardType = {
   board: gameTileType[][],
   letters: string,
+  rendered: React.MutableRefObject<boolean>,
   showGameEndPopup: boolean,
   currentRow: React.MutableRefObject<number>,
   currentCol: React.MutableRefObject<number>,
