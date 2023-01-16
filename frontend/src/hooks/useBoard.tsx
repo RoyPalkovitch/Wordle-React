@@ -183,7 +183,8 @@ export function useBoard(): boardType {
     keyBoardGrid.current.forEach((row, i) => {
       row.current.forEach((keyTile, j) => {
         const newClass = colorDataRow.keyBoardGrid[i][j].classState;
-        keyTile[1]({ ...keyTile[0], classState: newClass });
+        keyTile[0].classState = newClass;
+        keyTile[1]({ ...keyTile[0] });
       })
     });
     return colorDataRow.win;

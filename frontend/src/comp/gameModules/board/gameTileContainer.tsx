@@ -14,7 +14,6 @@ export function GameTileContainer({ idx }: { idx: number }): JSX.Element {
   useEffect(() => {
     if (!boardRef.current?.includes(rowRef))
       boardRef.current?.push(rowRef);
-    console.log(boardRef.current);
   }, [boardRef]);
 
   const updateRowRef = (cell: cellState) => {

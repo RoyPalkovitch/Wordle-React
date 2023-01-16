@@ -10,10 +10,9 @@ export function Keyboard(): JSX.Element {
   }, [createKeyboard]);
   return (
     <section id="keyboard">
-
-      {Array.from(new Array(3).keys()).map((currentRow) => {
+      {Array.from(new Array(3).keys()).map((currentRow, i) => {
         return (
-          <KeyboardRow key={`row-${currentRow}`} currentRow={currentRow} />)
+          <KeyboardRow key={`row-${i}`} currentRow={currentRow} />)
       })}
     </section>
   )

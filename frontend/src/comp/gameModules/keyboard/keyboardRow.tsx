@@ -12,7 +12,6 @@ export function KeyboardRow({ currentRow }: { currentRow: number }): JSX.Element
   useEffect(() => {
     if (!keyBoardGrid.current?.includes(rowRef))
       keyBoardGrid.current?.push(rowRef);
-    console.log(keyBoardGrid.current);
   }, [keyBoardGrid]);
 
   const updateRowRef = (cell: cellState) => {
@@ -23,7 +22,7 @@ export function KeyboardRow({ currentRow }: { currentRow: number }): JSX.Element
     <div className={'row' + (currentRow === 1 ? ' row-small' : '')}>
       {Array.from(new Array(10).keys()).map((currentCell) => {
         if ((currentRow === 1 && currentCell > 8) || (currentRow === 2 && currentCell > 7)) {
-          return <></>
+          return null
         }
         return (
           <KeyboardTile key={`row-${currentRow}-col-${currentCell}`} updateRef={updateRowRef} />
