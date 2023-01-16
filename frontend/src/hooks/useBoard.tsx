@@ -5,15 +5,18 @@ import { gameTileType } from "./types/gameTileType";
 import { boardType } from "./types/boardType";
 import { modalObsType } from "./types/modalObsType";
 import { ModalObsContext } from "../context/modalObsContext";
+
+type currentRow = React.MutableRefObject<[gameTileType, React.Dispatch<React.SetStateAction<gameTileType>>][]>;
+
+
 export function useBoard(): boardType {
 
   const { lengthOfWord, numberOfTries, propChanged }: gameConfigType = useContext(gameConfigContext) as gameConfigType;
   const { modalObs, setModalObs }: modalObsType = useContext(ModalObsContext) as modalObsType;
 
-  const [board, setBoard] = useState<gameTileType[][]>([[{ classState: '', letter: '' }]]);
   const [showGameEndPopup, setGameEndPopup] = useState(false);
   const [resetGame, setResetGame] = useState(false);
-
+  const boardRef = useRef<React.MutableRefObject<[gameTileType, React.Dispatch<React.SetStateAction<gameTileType>>][]>[]>([]);
   const currentRow = useRef(0);
   const currentCol = useRef(0);
   const keyBoardGrid = useRef<gameTileType[][]>([[{
@@ -28,19 +31,18 @@ export function useBoard(): boardType {
   const endPoint: string = 'http://localhost:3003';
   //create game board according user confing
   const createBoard = useCallback(() => {
-    if (board.length === numberOfTries.current!) {
-      return;
-    }
+    boardRef.current.forEach((row, i) => {
+      row.current.forEach((cell, j) => {
+        cell[0].letter = '';
+        cell[0].classState = 'col game-tile'
+        if (i === 0 && j === 0) {
+          cell[0].classState += ' focus'
+        }
+        cell[1]({ ...cell[0] });
+      })
+    })
 
-
-    for (let i = 0; i < numberOfTries.current!; i++) {
-      board.push([]);
-      for (let j = 0; j < lengthOfWord.current!; j++) {
-        board[i].push({ classState: '', letter: '' });
-      }
-    }
-
-  }, [board, lengthOfWord, numberOfTries])
+  }, [])
 
   //create on screen keyboard
   const createKeyboard = () => {
@@ -77,7 +79,7 @@ export function useBoard(): boardType {
 
   }
 
-  const shouldMoveRow = useCallback(async (currentFocusedRow: gameTileType[],) => {
+  const shouldMoveRow = useCallback(async (currentFocusedRow: currentRow) => {
     const win = await searchCorrectWords(currentFocusedRow);
     console.log("Done");
     currentRow.current++;
@@ -90,24 +92,52 @@ export function useBoard(): boardType {
     }
   }, [numberOfTries, setModalObs]);
 
-  const write = useCallback(async (letter: string, currentFocusedRow: gameTileType[]) => {
-    if (!currentFocusedRow[currentCol.current].letter) {
-      currentFocusedRow[currentCol.current].letter = letter.toUpperCase();
+  const addFocus = () => {
+    const currentCell = boardRef.current[currentRow.current].current[currentCol.current];
+    if (!currentCell[0].classState.includes('focus')) {
+      currentCell[0].classState += ' focus';
+      currentCell[1]({ ...currentCell[0] });
+    }
+  }
+
+  const removeFocus = () => {
+    const currentCell = boardRef.current[currentRow.current].current[currentCol.current];
+    currentCell[0].classState = currentCell[0].classState.replace('focus', '');
+    currentCell[1]({ ...currentCell[0] });
+  }
+
+  const write = useCallback(async (letter: string, currentFocusedRow: currentRow) => {
+    const cell = currentFocusedRow.current[currentCol.current];
+    if (!cell[0].letter) {
+      cell[0].letter = letter.toUpperCase();
+      removeFocus();
       currentCol.current++;
       if (currentCol.current > lengthOfWord.current! - 1) {
         await shouldMoveRow(currentFocusedRow);
       }
       return;
     }
-    if (currentFocusedRow[currentCol.current].letter) {
+    if (cell[0].letter) {
       currentCol.current++;
-      currentFocusedRow[currentCol.current].letter = letter.toUpperCase();
+      cell[0].letter = letter.toUpperCase();
+      removeFocus();
       if (currentCol.current === lengthOfWord.current! - 1) {
         await shouldMoveRow(currentFocusedRow);
       }
       return;
     }
   }, [shouldMoveRow, lengthOfWord]);
+
+  const deleteWord = useCallback((currentFocusedRow: currentRow) => {
+    const cell = currentFocusedRow.current[currentCol.current];
+    cell[0].letter = '';
+    if (currentCol.current > 0) {
+      removeFocus();
+      currentCol.current--;
+      return;
+    }
+    cell[1]({ ...cell[0] });
+  }, []);
 
   //handling keydown on document
   const handleKeyDown = useCallback(async (e: KeyboardEvent | MouseEvent<HTMLButtonElement>) => {
@@ -119,7 +149,8 @@ export function useBoard(): boardType {
     waitingResponse.current = true;
 
     const letter: string = (e as KeyboardEvent).key ? (e as KeyboardEvent).key : (e as MouseEvent<HTMLButtonElement>).currentTarget.value;
-    const currentFocusedRow: gameTileType[] = board[currentRow.current];
+    const currentFocusedRow: currentRow = boardRef.current[currentRow.current];
+
     if (letters.includes(letter.toLowerCase())) {
       await write(letter, currentFocusedRow);
     }
@@ -127,25 +158,16 @@ export function useBoard(): boardType {
       deleteWord(currentFocusedRow);
     }
     waitingResponse.current = false;
-    setBoard([...board]);
-
-  }, [write, board])
-
+    addFocus();
+  }, [write, deleteWord])
 
 
 
-  const deleteWord = (currentFocusedRow: gameTileType[]) => {
-    currentFocusedRow[currentCol.current].letter = '';
-    if (currentCol.current > 0) {
-      currentCol.current--;
-    }
-  }
+  const searchCorrectWords = async (currentFocusedRow: currentRow) => {//search for correct words in the row
+    const cells = currentFocusedRow.current;
 
-
-
-  const searchCorrectWords = async (currentFocusedRow: gameTileType[]) => {//search for correct words in the row
     const dataToSend = {
-      currentFocusedRow,
+      currentFocusedRow: Array.from(cells.map(cell => cell[0])),
       currentWord: currentWord.current,
       keyBoardGrid: keyBoardGrid.current
     }
@@ -161,7 +183,8 @@ export function useBoard(): boardType {
     const colorDataRow = await getCorrectData.json() as
       { currentFocusedRow: gameTileType[], keyBoardGrid: gameTileType[][], win: boolean };
     colorDataRow.currentFocusedRow.forEach((colorData, i) => {
-      currentFocusedRow[i].classState = colorData.classState;
+      const newClass = cells[i][0].classState + colorData.classState
+      cells[i][1]({ ...cells[i][0], classState: newClass })
     });
     keyBoardGrid.current = colorDataRow.keyBoardGrid;
     return colorDataRow.win;
@@ -171,7 +194,6 @@ export function useBoard(): boardType {
   // set/reset the game
   const setGame = useCallback(() => {
     rendered.current = true;
-    board.splice(0);
     keyBoardGrid.current = [];
     currentRow.current = 0;
     currentCol.current = 0;
@@ -180,8 +202,7 @@ export function useBoard(): boardType {
     createBoard();
     setGameEndPopup(false);
     setResetGame(false);
-    setBoard([...board]);
-  }, [board, setBoard, createBoard])
+  }, [createBoard])
 
   useEffect(() => {
     if (!rendered.current || propChanged) {
@@ -205,7 +226,6 @@ export function useBoard(): boardType {
 
 
   return {
-    board,
     currentRow,
     currentCol,
     letters,
@@ -214,7 +234,8 @@ export function useBoard(): boardType {
     winOrLose,
     rendered,
     setResetGame,
-    handleKeyDown
+    handleKeyDown,
+    boardRef
   }
 
 }

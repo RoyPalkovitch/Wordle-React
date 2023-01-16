@@ -2,8 +2,8 @@ import { MouseEvent } from "react"
 import { gameTileType } from "./gameTileType"
 
 export type boardType = {
-  board: gameTileType[][],
   letters: string,
+  boardRef: React.MutableRefObject<React.MutableRefObject<[gameTileType, React.Dispatch<React.SetStateAction<gameTileType>>][]>[] | undefined>,
   rendered: React.MutableRefObject<boolean>,
   showGameEndPopup: boolean,
   currentRow: React.MutableRefObject<number>,
