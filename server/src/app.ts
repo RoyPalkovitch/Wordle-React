@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { gameEndPoint } from '../src/controllers/game/gameEndPoint'
+import { gameEndPoint } from './controllers/game/gameEndPoint'
 
 const app = express();
 
