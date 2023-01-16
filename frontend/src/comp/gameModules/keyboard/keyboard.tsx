@@ -1,27 +1,19 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { KeyboardRow } from "./keyboardRow";
-import { KeyboardTile } from "./keyboardTile";
 import { boardContext } from "../../../context/boardContext"
 import { boardType } from "../../../hooks/types/boardType";
 
 export function Keyboard(): JSX.Element {
-  const { keyBoardGrid }: boardType = useContext(boardContext) as boardType;
-  if (!keyBoardGrid) {
-    return <></>;
-  }
+  const { createKeyboard }: boardType = useContext(boardContext) as boardType;
+  useEffect(() => {
+    createKeyboard();
+  }, [createKeyboard]);
   return (
     <section id="keyboard">
-      {keyBoardGrid.current.map((currentRow, currentKeysRow) => {
+
+      {Array.from(new Array(3).keys()).map((currentRow) => {
         return (
-          <KeyboardRow key={`row-${currentKeysRow}`} currentKeysRow={currentKeysRow}>
-            {currentRow.map((currentKey, currentKeyPos) => {
-              return (
-                <KeyboardTile key={`row-${currentKeysRow}-col-${currentKeyPos}`}
-                  currentKey={currentKey}
-                />
-              )
-            })}
-          </KeyboardRow>)
+          <KeyboardRow key={`row-${currentRow}`} currentRow={currentRow} />)
       })}
     </section>
   )

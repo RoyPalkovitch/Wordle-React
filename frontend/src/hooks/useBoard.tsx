@@ -17,12 +17,9 @@ export function useBoard(): boardType {
   const [showGameEndPopup, setGameEndPopup] = useState(false);
   const [resetGame, setResetGame] = useState(false);
   const boardRef = useRef<React.MutableRefObject<[gameTileType, React.Dispatch<React.SetStateAction<gameTileType>>][]>[]>([]);
+  const keyBoardGrid = useRef<React.MutableRefObject<[gameTileType, React.Dispatch<React.SetStateAction<gameTileType>>][]>[]>([]);;
   const currentRow = useRef(0);
   const currentCol = useRef(0);
-  const keyBoardGrid = useRef<gameTileType[][]>([[{
-    letter: '',
-    classState: 'keyboard-tile '
-  }]]);
   const winOrLose = useRef('');
   const currentWord = useRef('');
   const waitingResponse = useRef(false);
@@ -45,39 +42,32 @@ export function useBoard(): boardType {
   }, [])
 
   //create on screen keyboard
-  const createKeyboard = () => {
+  const createKeyboard = useCallback(() => {
     let letterCount = 0;
-
-    if (keyBoardGrid.current.length === 3) {
-      return;
-    }
-    for (let currentKeysRow = 0; currentKeysRow < 3; currentKeysRow++) {
-      keyBoardGrid.current.push([]);
-      for (let currentKeyPos = 0; currentKeyPos < 10; currentKeyPos++) {
-        if (currentKeysRow === 1 && currentKeyPos === 9) {
-          continue;
+    keyBoardGrid.current.forEach((row, i) => {
+      row.current.forEach((cell, j) => {
+        if (i === 1 && j === 9) {
+          return;
         }
-        keyBoardGrid.current[currentKeysRow].push({
+        cell[0] = {
           letter: '',
           classState: 'keyboard-tile '
-        });
-        if (currentKeysRow === 2 && (currentKeyPos === 0 || currentKeyPos === 7)) {
-          keyBoardGrid.current[currentKeysRow][currentKeyPos].classState += ' keyboard-tile-large ';
-          keyBoardGrid.current[currentKeysRow][currentKeyPos].letter = currentKeyPos === 7 ? 'Backspace' : 'Enter';
-          if (currentKeyPos === 7) {
-            break;
-          }
-        } else {
-          if (letterCount < 26) {
-            keyBoardGrid.current[currentKeysRow][currentKeyPos].letter = letters[letterCount].toUpperCase();
-            letterCount++;
-          }
+        };
+        if (i === 2 && (j === 0 || j === 7)) {
+          cell[0].classState += ' keyboard-tile-large ';
+          cell[0].letter = j === 7 ? 'Backspace' : 'Enter';
+          cell[1]({ ...cell[0] });
+          return;
         }
+        if (letterCount < 26) {
+          cell[0].letter = letters[letterCount].toUpperCase();
+          cell[1]({ ...cell[0] });
+          letterCount++;
+        }
+      });
+    });
 
-      }
-    }
-
-  }
+  }, [])
 
   const shouldMoveRow = useCallback(async (currentFocusedRow: currentRow) => {
     const win = await searchCorrectWords(currentFocusedRow);
@@ -165,11 +155,14 @@ export function useBoard(): boardType {
 
   const searchCorrectWords = async (currentFocusedRow: currentRow) => {//search for correct words in the row
     const cells = currentFocusedRow.current;
-
+    const keyBoard = Array.from(keyBoardGrid.current.map(row => (
+      Array.from(row.current.map(keyTile => keyTile[0]))
+    )));
+    console.log(keyBoard);
     const dataToSend = {
       currentFocusedRow: Array.from(cells.map(cell => cell[0])),
       currentWord: currentWord.current,
-      keyBoardGrid: keyBoardGrid.current
+      keyBoardGrid: keyBoard
     }
     const getCorrectData = await fetch(`${endPoint}/game/searchcorrectwords`,
       {
@@ -183,10 +176,16 @@ export function useBoard(): boardType {
     const colorDataRow = await getCorrectData.json() as
       { currentFocusedRow: gameTileType[], keyBoardGrid: gameTileType[][], win: boolean };
     colorDataRow.currentFocusedRow.forEach((colorData, i) => {
-      const newClass = cells[i][0].classState + colorData.classState
-      cells[i][1]({ ...cells[i][0], classState: newClass })
+      const newClass = cells[i][0].classState + colorData.classState;
+      cells[i][1]({ ...cells[i][0], classState: newClass });
     });
-    keyBoardGrid.current = colorDataRow.keyBoardGrid;
+
+    keyBoardGrid.current.forEach((row, i) => {
+      row.current.forEach((keyTile, j) => {
+        const newClass = colorDataRow.keyBoardGrid[i][j].classState;
+        keyTile[1]({ ...keyTile[0], classState: newClass });
+      })
+    });
     return colorDataRow.win;
   }
 
@@ -194,7 +193,6 @@ export function useBoard(): boardType {
   // set/reset the game
   const setGame = useCallback(() => {
     rendered.current = true;
-    keyBoardGrid.current = [];
     currentRow.current = 0;
     currentCol.current = 0;
     winOrLose.current = '';
@@ -202,7 +200,7 @@ export function useBoard(): boardType {
     createBoard();
     setGameEndPopup(false);
     setResetGame(false);
-  }, [createBoard])
+  }, [createBoard, createKeyboard])
 
   useEffect(() => {
     if (!rendered.current || propChanged) {
@@ -233,9 +231,10 @@ export function useBoard(): boardType {
     showGameEndPopup,
     winOrLose,
     rendered,
+    boardRef,
     setResetGame,
     handleKeyDown,
-    boardRef
+    createKeyboard
   }
 
 }

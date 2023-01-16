@@ -1,28 +1,33 @@
-import { useContext, MouseEvent } from "react";
+import { useContext, MouseEvent, useState, useRef, useEffect } from "react";
 import { boardContext } from "../../../context/boardContext";
 import { boardType } from "../../../hooks/types/boardType";
-import { memo } from "react";
+import { cellState } from "../board/gameTile";
+import { gameTileType } from "../../../hooks/types/gameTileType";
 
-type propsType = {
-  key: string,
-  currentKey: currentKeyboardKeyType
+export interface KeyboardTileCompProps {
+  updateRef: (cell: cellState) => void,
 }
 
-export type currentKeyboardKeyType = {
-  classState: string,
-  letter: string
-}
-
-function KeyboardTileComp(props: propsType): JSX.Element {
-
+export function KeyboardTile(props: KeyboardTileCompProps): JSX.Element {
   const { handleKeyDown }: boardType = useContext(boardContext) as boardType;
+  const tile: cellState = useState<gameTileType>({ classState: '', letter: '' });
+  const rendered = useRef(false);
+  const updateRef = props.updateRef;
+
+  useEffect(() => {
+    if (!rendered.current)
+      updateRef(tile);
+    rendered.current = true
+  }, [updateRef, tile]);
+
 
   const handleOnClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     handleKeyDown(event);
   }
   return (
-    <button className={props.currentKey.classState} value={props.currentKey.letter} onClick={handleOnClick}>{props.currentKey.letter}</button>
+    <button className={tile[0].classState} value={tile[0].letter} onClick={handleOnClick}>{tile[0].letter}</button>
   )
 }
-export const KeyboardTile = memo(KeyboardTileComp);
+
+

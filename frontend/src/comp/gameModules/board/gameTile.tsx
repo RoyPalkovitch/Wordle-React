@@ -2,12 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { gameTileType } from "../../../hooks/types/gameTileType";
 
 export type cellState = [gameTileType, React.Dispatch<React.SetStateAction<gameTileType>>];
-interface gameTileCompProps {
+
+export interface gameTileCompProps {
   updateRef: (cell: cellState) => void,
-  rowCell: {
-    row: number;
-    cell: number;
-  },
   classInit: string
 }
 
