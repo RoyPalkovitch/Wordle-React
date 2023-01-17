@@ -176,8 +176,8 @@ export function useBoard(): boardType {
     const colorDataRow = await getCorrectData.json() as
       { currentFocusedRow: gameTileType[], keyBoardGrid: gameTileType[][], win: boolean };
     colorDataRow.currentFocusedRow.forEach((colorData, i) => {
-      const newClass = cells[i][0].classState + colorData.classState;
-      cells[i][1]({ ...cells[i][0], classState: newClass });
+      cells[i][0].classState += colorData.classState;
+      cells[i][1]({ ...cells[i][0] });
     });
 
     keyBoardGrid.current.forEach((row, i) => {
