@@ -1,22 +1,22 @@
-import { useEffect, useRef, useState } from "react";
-import { gameTileType } from "../../../hooks/types/gameTileType";
+import { useEffect, useRef } from "react";
 
-export type cellState = [gameTileType, React.Dispatch<React.SetStateAction<gameTileType>>];
+export type cellRef = React.RefObject<HTMLDivElement>;
 
 export interface gameTileCompProps {
-  updateRef: (cell: cellState) => void,
+  updateRef: (cell: cellRef) => void,
   classInit: string
 }
 
 export function GameTile(props: gameTileCompProps): JSX.Element {
   const updateRef = props.updateRef;
-  const tile: cellState = useState<gameTileType>({ classState: props.classInit, letter: '' });
+  const tile = useRef<HTMLDivElement>(null);
+
   const rendered = useRef(false);
   useEffect(() => {
     if (!rendered.current)
       updateRef(tile);
     rendered.current = true
   }, [updateRef, tile]);
-
-  return (<div className={tile[0].classState}>{tile[0].letter} </div>)
+  
+  return (<div ref={tile}></div>)
 }
