@@ -27,7 +27,7 @@ export class GameService {
         return false;
       }
 
-      //if letter exist
+      //if letter correct
       charCount[letter] -= 1;
       currentFocusedRow[index].classState = 'correct';
       if (charCount[letter] === 0) {
