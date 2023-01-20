@@ -12,12 +12,12 @@ type currentRow = React.MutableRefObject<React.RefObject<HTMLDivElement>[]>;
 
 
 export function useBoard(): boardType {
-  const { lengthOfWord, numberOfTries, propChanged }: gameConfigType = useContext(gameConfigContext) as gameConfigType;
+  const { lengthOfWord, numberOfTries, propChanged, setPropChange }: gameConfigType = useContext(gameConfigContext) as gameConfigType;
   const { modalObs, setModalObs }: modalObsType = useContext(ModalObsContext) as modalObsType;
 
   const [showGameEndPopup, setGameEndPopup] = useState(false);
   const [resetGame, setResetGame] = useState(false);
-  
+
   const boardRef = useRef<React.MutableRefObject<React.RefObject<HTMLDivElement>[]>[]>([]);
   const keyBoardGrid = useRef<React.MutableRefObject<keyboardTileType[]>[]>([]);;
 
@@ -225,6 +225,7 @@ export function useBoard(): boardType {
         .then(response => response.text())
         .then(response => currentWord.current = response.toUpperCase())
       setGame();
+      setPropChange(false);
     }
     if (!modalObs) {
       //add event if modal is closed
@@ -236,7 +237,7 @@ export function useBoard(): boardType {
     //remove event if modal is open
     document.removeEventListener('keydown', handleKeyDown);
 
-  }, [resetGame, propChanged, modalObs, handleKeyDown, setGame]);
+  }, [resetGame, propChanged, modalObs, handleKeyDown, setGame, setPropChange]);
 
 
   return {

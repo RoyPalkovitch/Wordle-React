@@ -17,6 +17,7 @@ export function useGameConfig(): gameConfigType {
     lengthOfWord,
     numberOfTries,
     propChanged,
+    setPropChange,
     changeConfig
   })
 }
