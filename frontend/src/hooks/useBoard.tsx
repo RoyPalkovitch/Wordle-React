@@ -34,7 +34,15 @@ export function useBoard(): boardType {
   //create game board according user confing
   const createBoard = useCallback(() => {
     boardRef.current.forEach((row, i) => {
+      if (i >= numberOfTries.current!) {
+        boardRef.current.splice(i);
+        return;
+      }
       row.current.forEach((cell, j) => {
+        if (j >= lengthOfWord.current!) {
+          row.current.splice(j);
+          return;
+        }
         cell.current!.innerText = '';
         cell.current!.className = 'col game-tile'
         if (i === 0 && j === 0) {
@@ -43,7 +51,7 @@ export function useBoard(): boardType {
       })
     })
 
-  }, [])
+  }, [lengthOfWord, numberOfTries])
 
   //create on screen keyboard
   const createKeyboard = useCallback(() => {
@@ -155,10 +163,16 @@ export function useBoard(): boardType {
   const searchCorrectWords = async (currentFocusedRow: currentRow) => {//search for correct words in the row
     const currentRow = currentFocusedRow.current;
     const keyBoard = Array.from(keyBoardGrid.current.map(row => (
-      Array.from(row.current.map(keyTile => ({ letter: keyTile.current?.innerText, classState: keyTile.current?.className } as gameTileType)))
+      Array.from(row.current.map(keyTile =>
+      ({
+        letter: keyTile.current?.innerText, classState: keyTile.current?.className
+      } as gameTileType)))
     )));
     const dataToSend = {
-      currentFocusedRow: Array.from(currentRow.map(cell => ({ letter: cell.current?.innerText, classState: cell.current?.className } as gameTileType))),
+      currentFocusedRow: Array.from(currentRow.map(cell =>
+      ({
+        letter: cell.current?.innerText, classState: cell.current?.className
+      } as gameTileType))),
       currentWord: currentWord.current,
       keyBoardGrid: keyBoard
     }
@@ -210,14 +224,14 @@ export function useBoard(): boardType {
     if (!modalObs) {
       //add event if modal is closed
       document.addEventListener("keydown", handleKeyDown);
-      return () =>
+      return () => {
         document.removeEventListener('keydown', handleKeyDown);
+      }
     }
     //remove event if modal is open
     document.removeEventListener('keydown', handleKeyDown);
 
   }, [resetGame, propChanged, modalObs, handleKeyDown, setGame]);
-
 
 
   return {
@@ -233,6 +247,4 @@ export function useBoard(): boardType {
     handleKeyDown,
     createKeyboard
   }
-
 }
-
