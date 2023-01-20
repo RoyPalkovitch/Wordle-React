@@ -3,20 +3,20 @@ import { boardContext } from "../../../context/boardContext";
 import { boardType } from "../../../hooks/types/boardType";
 import { gameConfigContext } from "../../../context/gameConfigContext";
 import { gameConfigType } from "../../../hooks/types/gameConfigType";
-import { GameTile, cellState } from "./gameTile";
+import { GameTile, cellRef } from "./gameTile";
 
 
 export function GameTileContainer({ idx }: { idx: number }): JSX.Element {
   const { boardRef, currentRow, currentCol }: boardType = useContext(boardContext) as boardType;
   const { lengthOfWord }: gameConfigType = useContext(gameConfigContext) as gameConfigType;
-  const rowRef = useRef<cellState[]>([]);
+  const rowRef = useRef<cellRef[]>([]);
 
   useEffect(() => {
     if (!boardRef.current?.includes(rowRef))
       boardRef.current?.push(rowRef);
   }, [boardRef]);
 
-  const updateRowRef = (cell: cellState) => {
+  const updateRowRef = (cell: cellRef) => {
     rowRef.current.push(cell);
   };
 
