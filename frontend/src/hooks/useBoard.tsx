@@ -10,13 +10,14 @@ import { keyboardTileType } from "../comp/gameModules/keyboard/keyboardTile";
 type currentRow = React.MutableRefObject<React.RefObject<HTMLDivElement>[]>;
 
 
+
 export function useBoard(): boardType {
   const { lengthOfWord, numberOfTries, propChanged }: gameConfigType = useContext(gameConfigContext) as gameConfigType;
   const { modalObs, setModalObs }: modalObsType = useContext(ModalObsContext) as modalObsType;
 
   const [showGameEndPopup, setGameEndPopup] = useState(false);
   const [resetGame, setResetGame] = useState(false);
-
+  
   const boardRef = useRef<React.MutableRefObject<React.RefObject<HTMLDivElement>[]>[]>([]);
   const keyBoardGrid = useRef<React.MutableRefObject<keyboardTileType[]>[]>([]);;
 
@@ -53,6 +54,7 @@ export function useBoard(): boardType {
 
   }, [lengthOfWord, numberOfTries])
 
+
   //create on screen keyboard
   const createKeyboard = useCallback(() => {
     let letterCount = 0;
@@ -74,6 +76,7 @@ export function useBoard(): boardType {
           curretKey.current!.innerText = letters[letterCount].toUpperCase();
           letterCount++;
         }
+
       });
     });
 
@@ -108,6 +111,7 @@ export function useBoard(): boardType {
     const currentCell = currentFocusedRow.current[currentCol.current];
     if (!currentCell.current?.innerText) {
       currentCell.current!.innerText = letter.toUpperCase();
+
       removeFocus();
       currentCol.current++;
       if (currentCol.current > lengthOfWord.current! - 1) {
@@ -118,6 +122,7 @@ export function useBoard(): boardType {
     if (currentCell.current!.innerText) {
       currentCol.current++;
       currentCell.current!.innerText = letter.toUpperCase();
+
       removeFocus();
       if (currentCol.current === lengthOfWord.current! - 1) {
         await shouldMoveRow(currentFocusedRow);
@@ -129,6 +134,7 @@ export function useBoard(): boardType {
   const deleteWord = useCallback((currentFocusedRow: currentRow) => {
     const currentCell = currentFocusedRow.current[currentCol.current];
     currentCell.current!.innerText = '';
+
     if (currentCol.current > 0) {
       removeFocus();
       currentCol.current--;
@@ -146,6 +152,7 @@ export function useBoard(): boardType {
     waitingResponse.current = true;
 
     const letter: string = (e as KeyboardEvent).key ? (e as KeyboardEvent).key : (e as MouseEvent<HTMLButtonElement>).currentTarget.innerText;
+
     const currentFocusedRow: currentRow = boardRef.current[currentRow.current];
 
     if (letters.includes(letter.toLowerCase())) {
@@ -157,9 +164,6 @@ export function useBoard(): boardType {
     waitingResponse.current = false;
     addFocus();
   }, [write, deleteWord])
-
-
-
   const searchCorrectWords = async (currentFocusedRow: currentRow) => {//search for correct words in the row
     const currentRow = currentFocusedRow.current;
     const keyBoard = Array.from(keyBoardGrid.current.map(row => (
@@ -173,6 +177,7 @@ export function useBoard(): boardType {
       ({
         letter: cell.current?.innerText, classState: cell.current?.className
       } as gameTileType))),
+
       currentWord: currentWord.current,
       keyBoardGrid: keyBoard
     }

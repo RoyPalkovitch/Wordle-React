@@ -1,5 +1,6 @@
 import { useRef, useEffect, useContext } from "react";
 import { KeyboardTile, keyboardTileType } from "./keyboardTile"
+
 import { boardContext } from "../../../context/boardContext";
 import { boardType } from "../../../hooks/types/boardType";
 
@@ -14,6 +15,7 @@ export function KeyboardRow({ currentRow }: { currentRow: number }): JSX.Element
   }, [keyBoardGrid]);
 
   const updateRowRef = (cell: keyboardTileType) => {
+
     rowRef.current.push(cell);
   };
 

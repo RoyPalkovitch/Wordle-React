@@ -5,7 +5,6 @@ import { gameConfigContext } from "../../../context/gameConfigContext";
 import { gameConfigType } from "../../../hooks/types/gameConfigType";
 import { GameTile, cellRef } from "./gameTile";
 
-
 export function GameTileContainer({ idx }: { idx: number }): JSX.Element {
   const { boardRef, currentRow, currentCol }: boardType = useContext(boardContext) as boardType;
   const { lengthOfWord }: gameConfigType = useContext(gameConfigContext) as gameConfigType;
@@ -19,7 +18,6 @@ export function GameTileContainer({ idx }: { idx: number }): JSX.Element {
   const updateRowRef = (cell: cellRef) => {
     rowRef.current.push(cell);
   };
-
 
   return (
     <div className="row">{
