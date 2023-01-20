@@ -1,20 +1,19 @@
 import { useRef, useEffect, useContext } from "react";
-import { cellState } from "../board/gameTile";
-import { KeyboardTile } from "./keyboardTile"
+import { KeyboardTile, keyboardTileType } from "./keyboardTile"
 import { boardContext } from "../../../context/boardContext";
 import { boardType } from "../../../hooks/types/boardType";
 
 
 export function KeyboardRow({ currentRow }: { currentRow: number }): JSX.Element {
   const { keyBoardGrid }: boardType = useContext(boardContext) as boardType;
-  const rowRef = useRef<cellState[]>([]);
+  const rowRef = useRef<keyboardTileType[]>([]);
 
   useEffect(() => {
     if (!keyBoardGrid.current?.includes(rowRef))
       keyBoardGrid.current?.push(rowRef);
   }, [keyBoardGrid]);
 
-  const updateRowRef = (cell: cellState) => {
+  const updateRowRef = (cell: keyboardTileType) => {
     rowRef.current.push(cell);
   };
 
