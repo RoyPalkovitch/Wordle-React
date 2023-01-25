@@ -1,17 +1,15 @@
 import { MouseEvent } from "react"
-import { cellRef } from "../../comp/gameModules/board/gameTile";
-import { keyboardTileType } from "../../comp/gameModules/keyboard/keyboardTile";
+import { gameTileType } from "./gameTileType"
 
 export type boardType = {
+  board: gameTileType[][],
   letters: string,
-  showGameEndPopup: boolean,
-  setResetGame: React.Dispatch<React.SetStateAction<boolean>>,
-  boardRef: React.MutableRefObject<React.MutableRefObject<cellRef[]>[] | undefined>,
-  keyBoardGrid: React.MutableRefObject<React.MutableRefObject<keyboardTileType[]>[] | undefined>,
   rendered: React.MutableRefObject<boolean>,
+  showGameEndPopup: boolean,
   currentRow: React.MutableRefObject<number>,
   currentCol: React.MutableRefObject<number>,
+  keyBoardGrid: React.MutableRefObject<gameTileType[][]>,
   winOrLose: React.MutableRefObject<string>,
-  createKeyboard: () => void;
+  setResetGame: React.Dispatch<React.SetStateAction<boolean>>,
   handleKeyDown: (e: KeyboardEvent | MouseEvent<HTMLButtonElement>) => void
 }

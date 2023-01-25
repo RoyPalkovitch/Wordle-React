@@ -1,32 +1,18 @@
-import { useRef, useEffect, useContext } from "react";
-import { KeyboardTile, keyboardTileType } from "./keyboardTile"
-
-import { boardContext } from "../../../context/boardContext";
-import { boardType } from "../../../hooks/types/boardType";
+import { KeyboardTile } from "./keyboardTile"
+import { gameTileType } from "../../../hooks/types/gameTileType";
 
 
-export function KeyboardRow({ currentRow }: { currentRow: number }): JSX.Element {
-  const { keyBoardGrid }: boardType = useContext(boardContext) as boardType;
-  const rowRef = useRef<keyboardTileType[]>([]);
+export function KeyboardRow({ rowNum, setKeyBoardobs, keyboardRow }: { rowNum: number, setKeyBoardobs: React.Dispatch<React.SetStateAction<string>>, keyboardRow: gameTileType[] }): JSX.Element {
 
-  useEffect(() => {
-    if (!keyBoardGrid.current?.includes(rowRef))
-      keyBoardGrid.current?.push(rowRef);
-  }, [keyBoardGrid]);
-
-  const updateRowRef = (cell: keyboardTileType) => {
-
-    rowRef.current.push(cell);
-  };
+  const clickNotify = (letter: string) => {
+    setKeyBoardobs(letter);
+  }
 
   return (
-    <div className={'row' + (currentRow === 1 ? ' row-small' : '')}>
-      {Array.from(new Array(10).keys()).map((currentCell) => {
-        if ((currentRow === 1 && currentCell > 8) || (currentRow === 2 && currentCell > 7)) {
-          return null
-        }
+    <div className={rowNum !== 1 ? 'row' : 'row row-small'}>
+      {keyboardRow.map((keyboardTile, tileNum) => {
         return (
-          <KeyboardTile key={`row-${currentRow}-col-${currentCell}`} updateRef={updateRowRef} />
+          <KeyboardTile key={`row-${rowNum}-col-${tileNum}`} keyboardTile={keyboardTile} clickNotify={clickNotify} />
         )
       })}</div>
   )

@@ -1,32 +1,44 @@
-import { useRef, useEffect, useContext } from "react"
-import { boardContext } from "../../../context/boardContext";
-import { boardType } from "../../../hooks/types/boardType";
+import { useCallback, useContext, useEffect, useState } from "react"
 import { gameConfigContext } from "../../../context/gameConfigContext";
 import { gameConfigType } from "../../../hooks/types/gameConfigType";
-import { GameTile, cellRef } from "./gameTile";
+import { GameTile } from "./gameTile";
+import { gameTileType } from "../../../hooks/types/gameTileType";
 
-export function GameTileContainer({ idx }: { idx: number }): JSX.Element {
-  const { boardRef, currentRow, currentCol }: boardType = useContext(boardContext) as boardType;
+export function GameTileContainer({ idx, rowFocus, keyboardObs, searchCorrectWords, setKeyBoardobs }: {
+  idx: number, rowFocus: boolean, keyboardObs: string, searchCorrectWords: (row: gameTileType[]) => void, setKeyBoardobs: React.Dispatch<React.SetStateAction<string>>
+}): JSX.Element {
   const { lengthOfWord }: gameConfigType = useContext(gameConfigContext) as gameConfigType;
-  const rowRef = useRef<cellRef[]>([]);
+  const [rowState, setRowState] = useState<gameTileType[]>([]);
+  const updateRow = (gameTile: gameTileType) => {
+    rowState.push(gameTile);
+    if (rowState.length === 5) {
+      searchCorrectWords(rowState);
+      return;
+    }
+    setRowState([...rowState]);
+  };
 
   useEffect(() => {
-    if (!boardRef.current?.includes(rowRef))
-      boardRef.current?.push(rowRef);
-  }, [boardRef]);
+    if (!keyboardObs || !rowFocus) return;
+    rowState.push({ classState: '', letter: keyboardObs });
+    setKeyBoardobs('');
+    if (rowState.length === 5) {
+      searchCorrectWords(rowState);
+      return;
+    }
+    setRowState([...rowState]);
+  }, [searchCorrectWords, rowState, setRowState, keyboardObs, rowFocus, setKeyBoardobs]);
 
-  const updateRowRef = (cell: cellRef) => {
-    rowRef.current.push(cell);
-  };
+
 
   return (
     <div className="row">{
-      Array.from(new Array(lengthOfWord.current).keys()).map((j) => {
-        return (
-          <GameTile key={`row-${idx}-cell-${j}`} classInit={
-            (currentRow.current === idx && currentCol.current === j) ?
-              "col game-tile focus " : "col game-tile "} updateRef={updateRowRef} />
-        )
+      Array.from(Array(lengthOfWord.current).keys()).map((j) => {
+        return <GameTile
+          key={`row-${idx}-cell-${j}`}
+          gameTile={rowState[j] ? rowState[j] : { classState: '', letter: '' }}
+          focus={rowFocus && j === rowState.length}
+          updateRow={updateRow} />
       })
     }
     </div>
