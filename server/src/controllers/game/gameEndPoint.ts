@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express";
 import bodyParser from 'body-parser';
-import { GameController, IboardData } from "./gameController";
+import { GameController } from "./gameController";
 export const gameEndPoint = Router();
 
 
