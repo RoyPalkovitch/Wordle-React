@@ -9,8 +9,9 @@ export function GameTile({ gameTile, updateRow, focus }: { gameTile: gameTileTyp
   });
 
   const changeHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.target.value = e.target.value.toUpperCase();
-    gameTile.letter = e.target.value;
+    const re = /['a-zA-Z']/
+    if (!re.test(e.target.value)) return
+    gameTile.letter = e.target.value.toUpperCase();
     updateRow(gameTile);
   }
 

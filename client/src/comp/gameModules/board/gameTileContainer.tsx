@@ -1,16 +1,23 @@
-import { useContext, useEffect, useState } from "react"
+import { useCallback, useContext, useEffect, useState } from "react"
 import { gameConfigContext } from "../../../context/gameConfigContext";
 import { gameConfigType } from "../../../hooks/types/gameConfigType";
 import { GameTile } from "./gameTile";
 import { gameTileType } from "../../../hooks/types/gameTileType";
 
-export function GameTileContainer({ idx, rowFocus, keyboardObs, resetGame, searchCorrectWords, setKeyBoardobs }: {
-  idx: number, rowFocus: boolean, keyboardObs: string, resetGame: boolean, searchCorrectWords: (row: gameTileType[]) => void, setKeyBoardobs: React.Dispatch<React.SetStateAction<string>>
-}): JSX.Element {
+type gameTileProps = {
+  idx: number,
+  rowFocus: boolean,
+  keyboardObs: string,
+  resetGame: boolean,
+  searchCorrectWords: (row: gameTileType[]) => void,
+  setKeyBoardobs: React.Dispatch<React.SetStateAction<string>>;
+}
+
+export function GameTileContainer({ idx, rowFocus, keyboardObs, resetGame, searchCorrectWords, setKeyBoardobs }: gameTileProps): JSX.Element {
   const { lengthOfWord, propChanged }: gameConfigType = useContext(gameConfigContext) as gameConfigType;
   const [rowState, setRowState] = useState<gameTileType[]>([]);
 
-  const updateRow = (gameTile: gameTileType) => {
+  const updateRow = useCallback((gameTile: gameTileType) => {
     if (rowState.length > lengthOfWord.current!) return;
     rowState.push(gameTile);
     if (rowState.length === lengthOfWord.current) {
@@ -18,18 +25,14 @@ export function GameTileContainer({ idx, rowFocus, keyboardObs, resetGame, searc
       return;
     }
     setRowState([...rowState]);
-  };
+  }, [lengthOfWord, rowState, searchCorrectWords]);
 
   useEffect(() => {
-    if (!keyboardObs || !rowFocus || rowState.length > 5) return;
-    rowState.push({ classState: '', letter: keyboardObs });
+    if (!keyboardObs || !rowFocus || rowState.length > lengthOfWord.current!) return;
+    const letter = keyboardObs;
+    updateRow({ classState: '', letter });
     setKeyBoardobs('');
-    if (rowState.length === 5) {
-      searchCorrectWords(rowState);
-      return;
-    }
-    setRowState([...rowState]);
-  }, [searchCorrectWords, rowState, setRowState, keyboardObs, rowFocus, setKeyBoardobs]);
+  }, [rowState, keyboardObs, rowFocus, setKeyBoardobs, updateRow, lengthOfWord]);
 
   useEffect(() => {
     if (resetGame || propChanged) {

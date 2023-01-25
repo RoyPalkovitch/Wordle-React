@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { GameTileContainer } from "./gameTileContainer";
 import React from "react";
 import { gameConfigContext } from "../../../context/gameConfigContext";
@@ -10,26 +10,31 @@ import { EndGamePopup } from "./endGamePopup";
 
 
 export function Board(): JSX.Element {
-  const letters: string = "qwertyuiopasdfghjklzxcvbnm";
   const { numberOfTries, propChanged, setPropChange }: gameConfigType = useContext(gameConfigContext) as gameConfigType;
   const [board, setBoard] = useState<gameTileType[][]>([]);
   const [keyboardObs, setKeyBoardobs] = useState('');
   const [endGamePopup, setGameEndPopup] = useState(false);
   const [resetGame, setResetGame] = useState(false);
   const winOrLose = useRef("");
-  const currentWord = useRef('');
+
+  const fetchWord = (): string => {
+    let word = ''
+    fetch(`http://localhost:3003/game`)
+      .then(response => response.text())
+      .then(response => word = response)
+    return word;
+  }
+  const currentWord = useRef(fetchWord());
+
   const createKeyBoard = () => {
+    const letters: string = "qwertyuiopasdfghjklzxcvbnm";
     const keyBoard: gameTileType[][] = [];
     let letterCount = 0;
     Array.from(Array(3).keys()).forEach((i) => {
       keyBoard.push([]);
       Array.from(Array(10).keys()).forEach((j) => {
-        if ((i === 1 && j === 9) || (i === 2 && j > 8)) {
+        if ((i === 1 && j === 9) || (i === 2 && (j >= 8 || j === 0))) {
           return;
-        }
-        if (i === 2 && (j === 0 || j === 8)) {
-          keyBoard[i].push({ classState: 'keyboard-tile keyboard-tile-large ', letter: j === 8 ? 'Backspace' : 'Enter' })
-          return
         }
         if (letterCount < 26) {
           keyBoard[i].push({ classState: 'keyboard-tile', letter: letters[letterCount].toUpperCase() })
@@ -71,19 +76,21 @@ export function Board(): JSX.Element {
     }
   }
 
+  const setGame = useCallback(() => {
+    board.splice(0);
+    currentWord.current = fetchWord();
+    keyboard.current = createKeyBoard();
+    setBoard([...board]);
+    setPropChange(false);
+    setResetGame(false);
+  }, [board, setBoard, setPropChange, setResetGame])
+
   useEffect(() => {
     if (resetGame || propChanged) {
-      board.splice(0);
-      keyboard.current = createKeyBoard();
-      setBoard([...board]);
-      setPropChange(false);
-      setResetGame(false);
+      setGame();
       return
     }
-    fetch(`http://localhost:3003/game`)
-      .then(response => response.text())
-      .then(response => currentWord.current = response.toUpperCase());
-  }, [resetGame, board, propChanged, setPropChange]);
+  }, [setGame, resetGame, propChanged]);
 
 
 
