@@ -20,7 +20,7 @@ export function GameTile({ gameTile, updateRow, focus }: { gameTile: gameTileTyp
     onChange={(e) => changeHandle(e)}
     maxLength={1}
     value={gameTile.letter}
-    className={"col game-tile" + gameTile.classState}
+    className={"col game-tile " + gameTile.classState}
   />);
 }
 

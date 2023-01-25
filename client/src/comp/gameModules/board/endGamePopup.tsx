@@ -1,28 +1,27 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from 'react-bootstrap/Modal';
 import { Button } from 'react-bootstrap';
-import { boardContext } from "../../../context/boardContext";
-import { boardType } from "../../../hooks/types/boardType";
-import { modalObsType } from "../../../hooks/types/modalObsType";
-import { ModalObsContext } from "../../../context/modalObsContext";
 
-export function EndGamePopup(): JSX.Element {
+type propsData = {
+  winOrLose: React.MutableRefObject<string>,
+  endGamePopup: boolean,
+  setGameEndPopup: React.Dispatch<React.SetStateAction<boolean>>,
+  setResetGame: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export function EndGamePopup({ winOrLose, endGamePopup, setResetGame, setGameEndPopup }: propsData): JSX.Element {
   const [show, setShow] = useState(false);
-  const { showGameEndPopup, winOrLose, setResetGame, rendered }: boardType = useContext(boardContext) as boardType;
-  const { setModalObs }: modalObsType = useContext(ModalObsContext) as modalObsType;
 
   useEffect(() => {
-    showGameEndPopup ? handleShow() : handleClose();
-    // setModalObs(showGameEndPopup);
-  }, [showGameEndPopup, setModalObs])
+    endGamePopup ? handleShow() : handleClose();
+  }, [endGamePopup])
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const handlePlayAgain = () => {
     handleClose();
     setResetGame(true);
-    setModalObs(false);
-    rendered.current = false;
+    setGameEndPopup(false);
   }
 
   return (

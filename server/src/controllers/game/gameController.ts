@@ -7,9 +7,10 @@ export type gameTileType = {
 }
 
 export interface IboardData {
-  currentFocusedRow: gameTileType[],
-  currentWord: string
-  keyBoardGrid: gameTileType[][];
+  rowData: gameTileType[],
+  currentWord?: string,
+  win?: boolean,
+  keyboard: gameTileType[][];
 }
 
 export class GameController {
@@ -26,7 +27,7 @@ export class GameController {
 
   put(req: Request, res: Response) {
     const data: IboardData = req.body;
-    const result = this.gameService.searchCorrectWords(data.currentFocusedRow, data.currentWord, data.keyBoardGrid);
+    const result = this.gameService.searchCorrectWords(data);
     if (!result) {
       res.sendStatus(400);
     }

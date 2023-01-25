@@ -5,7 +5,7 @@ import { gameEndPoint } from './controllers/game/gameEndPoint'
 const app = express();
 
 app.use(cors());
-app.use('/login',);
+//app.use('/login',);
 app.use('/game', gameEndPoint);
 
 export default app;
