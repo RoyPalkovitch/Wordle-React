@@ -20,13 +20,14 @@ export class GameController {
     this.gameService = new GameService();
   }
 
-  async get(res: Response) {
+  async get(req: Request, res: Response) {
     const word = await this.gameService.getWord();
-    res.send(word);
+    res.send(word).status(200);
   }
 
-  put(req: Request, res: Response) {
+  async put(req: Request, res: Response) {
     const data: IboardData = req.body;
+
     const result = this.gameService.searchCorrectWords(data);
     if (!result) {
       res.sendStatus(400);
@@ -34,3 +35,4 @@ export class GameController {
     res.status(200).send(JSON.stringify(result));
   };
 }
+

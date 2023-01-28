@@ -1,9 +1,9 @@
 import { IboardData, gameTileType } from "../controllers/game/gameController";
-
 export class GameService {
   constructor() { }
 
   getWord(): Promise<string> {
+
     return new Promise<string>(resolve => setTimeout(resolve, 1000, 'event'));
   }
 
