@@ -14,8 +14,7 @@
         "sourceType": "module"
     },
     "plugins": [
-        "@typescript-eslint",
-        "@typescript-eslint/no-non-null-assertion"
+        "@typescript-eslint"
     ],
     "rules": {
         "semi": [
