@@ -18,7 +18,7 @@ export function Board(): JSX.Element {
   const currentWord = useRef(-1);
 
   const fetchWord = async (): Promise<number> => {
-    const req = await fetch(`http://localhost:3003/game`);
+    const req = await fetch(`http://localhost:3333/game`);
     const word = +await req.text();
     return word
   }
@@ -50,7 +50,7 @@ export function Board(): JSX.Element {
       currentWord: currentWord.current,
       keyboard: keyboard.current
     }
-    const request = await fetch(`http://localhost:3003/game/searchcorrectwords`,
+    const request = await fetch(`http://localhost:3333/game/searchcorrectwords`,
       {
         method: 'PUT',
         headers: {
