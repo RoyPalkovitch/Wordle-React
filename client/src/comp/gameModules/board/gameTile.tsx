@@ -1,22 +1,28 @@
 import { useEffect, useRef } from "react";
+import { gameTileType } from "../../../hooks/types/gameTileType";
 
-export type cellRef = React.RefObject<HTMLDivElement>;
+export function GameTile({ gameTile, updateRow, focus }: { gameTile: gameTileType, focus: boolean, updateRow: (gameTile: gameTileType) => void }): JSX.Element {
+  const tileRef = useRef<HTMLInputElement>(null);
 
-export interface gameTileCompProps {
-  updateRef: (cell: cellRef) => void,
-  classInit: string
-}
-
-export function GameTile(props: gameTileCompProps): JSX.Element {
-  const updateRef = props.updateRef;
-  const tile = useRef<HTMLDivElement>(null);
-
-  const rendered = useRef(false);
   useEffect(() => {
-    if (!rendered.current)
-      updateRef(tile);
-    rendered.current = true
-  }, [updateRef, tile]);
-  
-  return (<div ref={tile}></div>)
+    focus && tileRef.current!.focus();
+  });
+
+  const changeHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const re = /['a-zA-Z']/
+    if (!re.test(e.target.value)) return
+    gameTile.letter = e.target.value.toUpperCase();
+    updateRow(gameTile);
+  }
+
+  return (<input
+    ref={tileRef}
+    disabled={!focus}
+    onChange={(e) => changeHandle(e)}
+    maxLength={1}
+    value={gameTile.letter}
+    className={"col game-tile " + gameTile.classState}
+  />);
 }
+
+

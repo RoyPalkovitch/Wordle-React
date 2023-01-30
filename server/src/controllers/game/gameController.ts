@@ -7,9 +7,10 @@ export type gameTileType = {
 }
 
 export interface IboardData {
-  currentFocusedRow: gameTileType[],
-  currentWord: string
-  keyBoardGrid: gameTileType[][];
+  rowData: gameTileType[],
+  currentWord?: string,
+  win?: boolean,
+  keyboard: gameTileType[][];
 }
 
 export class GameController {
@@ -19,17 +20,18 @@ export class GameController {
     this.gameService = new GameService();
   }
 
-  async get(res: Response) {
+  async get(req: Request, res: Response) {
     const word = await this.gameService.getWord();
-    res.send(word);
+    res.send(word.toString()).status(200);
   }
 
-  put(req: Request, res: Response) {
+  async put(req: Request, res: Response) {
     const data: IboardData = req.body;
-    const result = this.gameService.searchCorrectWords(data.currentFocusedRow, data.currentWord, data.keyBoardGrid);
+    const result = this.gameService.searchCorrectWords(data);
     if (!result) {
       res.sendStatus(400);
     }
     res.status(200).send(JSON.stringify(result));
   };
 }
+

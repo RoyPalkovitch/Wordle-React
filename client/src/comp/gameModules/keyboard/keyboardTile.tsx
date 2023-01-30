@@ -1,32 +1,15 @@
-import { useContext, MouseEvent, useRef, useEffect } from "react";
-import { boardContext } from "../../../context/boardContext";
-import { boardType } from "../../../hooks/types/boardType";
-
-export type keyboardTileType = React.RefObject<HTMLButtonElement>;
-
-export interface KeyboardTileCompProps {
-  updateRef: (cell: keyboardTileType) => void,
-}
-
-export function KeyboardTile(props: KeyboardTileCompProps): JSX.Element {
-  const { handleKeyDown }: boardType = useContext(boardContext) as boardType;
-  const tile = useRef<HTMLButtonElement>(null);;
-  const rendered = useRef(false);
-  const updateRef = props.updateRef;
-
-  useEffect(() => {
-    if (!rendered.current)
-      updateRef(tile);
-    rendered.current = true
-  }, [updateRef, tile]);
+import { gameTileType } from "../../../hooks/types/gameTileType";
 
 
-  const handleOnClick = (event: MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    handleKeyDown(event);
-  }
+export function KeyboardTile({ keyboardTile, clickNotify }: { keyboardTile: gameTileType, clickNotify: (letter: string) => void }): JSX.Element {
+
   return (
-    <button ref={tile} onClick={handleOnClick}></button>
+    <button
+      onClick={() => clickNotify(keyboardTile.letter)}
+      className={keyboardTile.classState}
+      value={keyboardTile.letter}>
+      {keyboardTile.letter}
+    </button>
   )
 }
 
