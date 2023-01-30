@@ -1,16 +1,21 @@
 import { IboardData, gameTileType } from "../controllers/game/gameController";
 export class GameService {
-  constructor() { }
 
-  getWord(): Promise<string> {
+  wordsMap: Map<number, string>
+  constructor() {
+    this.wordsMap.set(0, 'event');
+    this.wordsMap.set(1, 'apple');
+    this.wordsMap.set(2, 'watch');
+  }
 
-    return new Promise<string>(resolve => setTimeout(resolve, 1000, 'event'));
+  getWord(): Promise<number> {
+
+    return new Promise<number>(resolve => setTimeout(resolve, 1000, Math.floor(Math.random() * this.wordsMap.size)));
   }
 
   searchCorrectWords({ rowData, currentWord, keyboard }: IboardData): IboardData | boolean {
     const charCount: { [word: string]: number } = this.countCharsInWord(currentWord);
     const letters: string = "qwertyuiopasdfghjklzxcvbnm".toUpperCase();
-
     //marking the correct ones
     for (let index = 0; index < rowData.length; index++) {//checking each column in row
       const letter = rowData[index].letter;

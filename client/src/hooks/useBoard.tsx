@@ -3,12 +3,9 @@ import { gameConfigContext } from '../context/gameConfigContext';
 import { gameConfigType } from "./types/gameConfigType";
 import { gameTileType } from "./types/gameTileType";
 import { boardType } from "./types/boardType";
-import { modalObsType } from "./types/modalObsType";
-import { ModalObsContext } from "../context/modalObsContext";
 export function useBoard(): boardType {
 
   const { lengthOfWord, numberOfTries, propChanged }: gameConfigType = useContext(gameConfigContext) as gameConfigType;
-  const { modalObs, setModalObs }: modalObsType = useContext(ModalObsContext) as modalObsType;
 
   const [board, setBoard] = useState<gameTileType[][]>([[{ classState: '', letter: '' }]]);
   const [showGameEndPopup, setGameEndPopup] = useState(false);
@@ -85,10 +82,9 @@ export function useBoard(): boardType {
     if (win || currentRow.current === numberOfTries.current!) {
       winOrLose.current = win ? "Win" : "Lose";
       setGameEndPopup(true);
-      setModalObs(true);
       return
     }
-  }, [numberOfTries, setModalObs]);
+  }, [numberOfTries]);
 
   const write = useCallback(async (letter: string, currentFocusedRow: gameTileType[]) => {
     if (!currentFocusedRow[currentCol.current].letter) {
@@ -191,16 +187,9 @@ export function useBoard(): boardType {
         .then(response => currentWord.current = response.toUpperCase())
       setGame();
     }
-    // if (!modalObs) {
-    //   //add event if modal is closed
-    //   // document.addEventListener("keydown", handleKeyDown);
-    //   return () =>
-    //     document.removeEventListener('keydown', handleKeyDown);
-    // }
-    // //remove event if modal is open
-    // document.removeEventListener('keydown', handleKeyDown);
 
-  }, [resetGame, propChanged, modalObs, handleKeyDown, setGame]);
+
+  }, [resetGame, propChanged, handleKeyDown, setGame]);
 
 
 

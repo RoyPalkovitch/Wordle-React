@@ -1,6 +1,5 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { GameTileContainer } from "./gameTileContainer";
-import React from "react";
 import { gameConfigContext } from "../../../context/gameConfigContext";
 import { gameConfigType } from "../../../hooks/types/gameConfigType";
 import { gameTileType } from "../../../hooks/types/gameTileType";
@@ -16,15 +15,13 @@ export function Board(): JSX.Element {
   const [endGamePopup, setGameEndPopup] = useState(false);
   const [resetGame, setResetGame] = useState(false);
   const winOrLose = useRef("");
+  const currentWord = useRef("");
 
-  const fetchWord = (): string => {
-    let word = ''
-    fetch(`http://localhost:3003/game`)
-      .then(response => response.text())
-      .then(response => word = response)
-    return word;
+  const fetchWord = async (): Promise<string> => {
+    const req = await fetch(`http://localhost:3003/game`);
+    const word = await req.text();
+    return word
   }
-  const currentWord = useRef(fetchWord());
 
   const createKeyBoard = () => {
     const letters: string = "qwertyuiopasdfghjklzxcvbnm";
@@ -77,12 +74,12 @@ export function Board(): JSX.Element {
   }
 
   const setGame = useCallback(() => {
+    fetchWord().then(word => currentWord.current = word);
     board.splice(0);
-    currentWord.current = fetchWord();
     keyboard.current = createKeyBoard();
-    setBoard([...board]);
     setPropChange(false);
     setResetGame(false);
+    setBoard([...board]);
   }, [board, setBoard, setPropChange, setResetGame])
 
   useEffect(() => {
@@ -92,6 +89,9 @@ export function Board(): JSX.Element {
     }
   }, [setGame, resetGame, propChanged]);
 
+  useEffect(() => {
+    fetchWord().then(word => currentWord.current = word);
+  }, [])
 
 
   return (

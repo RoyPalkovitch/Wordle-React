@@ -8,21 +8,17 @@ import { AuthContext } from "../../context/authContext";
 import { Link, useLocation } from "react-router-dom";
 import { GameConfigModal } from "../gameModules/board/gameConfigModal"
 import { SignIn } from "./signIn";
-import { modalObsType } from "../../hooks/types/modalObsType";
-import { ModalObsContext } from "../../context/modalObsContext";
 
 
 
 export function Nav(): JSX.Element {
   let currentLocation = useLocation().pathname;
   const { currentUser, logOut }: authType = useContext(AuthContext) as authType;
-  const { setModalObs }: modalObsType = useContext(ModalObsContext) as modalObsType;
   const [showInfo, setShowInfo] = useState(false);
   const [showConfig, setShowConfig] = useState(false);
   const [showSignIn, setShowSignIn] = useState(false);
 
   const handleShow = (setShow: (value: React.SetStateAction<boolean>) => void, value: boolean) => {
-    setModalObs(value);
     setShow(value);
   }
 

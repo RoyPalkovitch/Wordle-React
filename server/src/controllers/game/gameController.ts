@@ -27,7 +27,6 @@ export class GameController {
 
   async put(req: Request, res: Response) {
     const data: IboardData = req.body;
-
     const result = this.gameService.searchCorrectWords(data);
     if (!result) {
       res.sendStatus(400);
