@@ -1,20 +1,22 @@
 import { IboardData, gameTileType } from "../controllers/game/gameController";
 export class GameService {
 
-  wordsMap: Map<number, string>
+  private wordsMap: Map<number, string>
   constructor() {
+    this.wordsMap = new Map<number, string>();
     this.wordsMap.set(0, 'event');
     this.wordsMap.set(1, 'apple');
     this.wordsMap.set(2, 'watch');
   }
 
   getWord(): Promise<number> {
-
     return new Promise<number>(resolve => setTimeout(resolve, 1000, Math.floor(Math.random() * this.wordsMap.size)));
   }
 
   searchCorrectWords({ rowData, currentWord, keyboard }: IboardData): IboardData | boolean {
-    const charCount: { [word: string]: number } = this.countCharsInWord(currentWord);
+    if (!this.wordsMap.has(+currentWord)) return false;
+    const word = this.wordsMap.get(+currentWord).toUpperCase();
+    const charCount: { [word: string]: number } = this.countCharsInWord(word);
     const letters: string = "qwertyuiopasdfghjklzxcvbnm".toUpperCase();
     //marking the correct ones
     for (let index = 0; index < rowData.length; index++) {//checking each column in row
@@ -23,7 +25,7 @@ export class GameService {
         return false;
       }
 
-      if (charCount[letter] === 0 || currentWord[index] !== letter) {
+      if (charCount[letter] === 0 || word[index] !== letter) {
         continue;
       }
 
@@ -56,7 +58,7 @@ export class GameService {
 
 
       //letter is not in the word
-      if (!currentWord.includes(letter) || (charCount[letter] === 0 && rowData[index].classState !== 'correct')) {
+      if (!word.includes(letter) || (charCount[letter] === 0 && rowData[index].classState !== 'correct')) {
         rowData[index].classState = 'wrong';
         if (keyboardTile.classState === 'keyboard-tile') {
           keyboardTile.classState = 'keyboard-tile wrong';
@@ -64,7 +66,7 @@ export class GameService {
         continue;
       }
 
-      if (letter !== currentWord[index]) {
+      if (letter !== word[index]) {
         charCount[letter] -= 1;
         if (!keyboardTile.classState.includes('correct'))
           keyboardTile.classState = 'keyboard-tile exist';
@@ -72,17 +74,17 @@ export class GameService {
       }
     }
 
-    const win = this.checkWin(rowData, currentWord);
+    const win = this.checkWin(rowData, word);
     return { rowData, keyboard, win };
   }
 
-  private countCharsInWord(currentWord: string): { [word: string]: number } {
+  private countCharsInWord(word: string): { [word: string]: number } {
     const count: { [word: string]: number } = {};
-    for (let i = 0; i < currentWord.length; i++) {
-      if (count[currentWord[i]])
-        count[currentWord[i]] += 1;
+    for (let i = 0; i < word.length; i++) {
+      if (count[word[i]])
+        count[word[i]] += 1;
       else {
-        count[currentWord[i]] = 1;
+        count[word[i]] = 1;
       }
     }
     return count;
@@ -101,9 +103,9 @@ export class GameService {
   }
 
   //check if all the word are correct and in order
-  private checkWin(rowData: gameTileType[], currentWord: string): boolean {
+  private checkWin(rowData: gameTileType[], word: string): boolean {
     const win = rowData.map(col => (col.letter)).join('');
-    if (win === currentWord) {
+    if (win === word) {
       return true;
     }
     return false;

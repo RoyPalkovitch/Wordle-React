@@ -15,11 +15,11 @@ export function Board(): JSX.Element {
   const [endGamePopup, setGameEndPopup] = useState(false);
   const [resetGame, setResetGame] = useState(false);
   const winOrLose = useRef("");
-  const currentWord = useRef("");
+  const currentWord = useRef(-1);
 
-  const fetchWord = async (): Promise<string> => {
+  const fetchWord = async (): Promise<number> => {
     const req = await fetch(`http://localhost:3003/game`);
-    const word = await req.text();
+    const word = +await req.text();
     return word
   }
 

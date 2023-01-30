@@ -22,7 +22,7 @@ export class GameController {
 
   async get(req: Request, res: Response) {
     const word = await this.gameService.getWord();
-    res.send(word).status(200);
+    res.send(word.toString()).status(200);
   }
 
   async put(req: Request, res: Response) {
