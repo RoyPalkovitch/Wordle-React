@@ -1,21 +1,21 @@
 import { IboardData, gameTileType } from "../controllers/game/gameController";
 export class GameService {
 
-  private wordsMap: Map<number, string>
+  private wordsMap: Map<string, string>
   constructor() {
-    this.wordsMap = new Map<number, string>();
-    this.wordsMap.set(0, 'event');
-    this.wordsMap.set(1, 'apple');
-    this.wordsMap.set(2, 'watch');
+    this.wordsMap = new Map<string, string>();
+    this.wordsMap.set('0', 'event');
+    this.wordsMap.set('1', 'apple');
+    this.wordsMap.set('2', 'watch');
   }
 
-  getWord(): Promise<number> {
-    return new Promise<number>(resolve => setTimeout(resolve, 1000, Math.floor(Math.random() * this.wordsMap.size)));
+  getWord(): Promise<string> {
+    return new Promise<string>(resolve => setTimeout(resolve, 1000, Math.floor(Math.random() * this.wordsMap.size)).toString());
   }
 
   searchCorrectWords({ rowData, currentWord, keyboard }: IboardData): IboardData | boolean {
-    if (!this.wordsMap.has(+currentWord)) return false;
-    const word = this.wordsMap.get(+currentWord).toUpperCase();
+    if (!this.wordsMap.has(currentWord)) return false;
+    const word = this.wordsMap.get(currentWord).toUpperCase();
     const charCount: { [word: string]: number } = this.countCharsInWord(word);
     const letters: string = "qwertyuiopasdfghjklzxcvbnm".toUpperCase();
     //marking the correct ones
@@ -91,6 +91,7 @@ export class GameService {
   }
 
   private getKeyboardTile(letter: string, keyboard: gameTileType[][]): gameTileType {
+
     for (let i = 0; i < keyboard.length; i++) {
       for (let j = 0; j < keyboard[i].length; j++) {
         if (letter === keyboard[i][j].letter) {
