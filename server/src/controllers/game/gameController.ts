@@ -32,6 +32,6 @@ export class GameController {
       res.sendStatus(400);
     }
     res.status(200).send(JSON.stringify(result));
-  };
+  }
 }
 

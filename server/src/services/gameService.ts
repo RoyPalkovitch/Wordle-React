@@ -1,12 +1,12 @@
 import { IboardData, gameTileType } from "../controllers/game/gameController";
 export class GameService {
 
-  private wordsMap: Map<string, string>
+  private wordsMap: Map<string, string>;
   constructor() {
     this.wordsMap = new Map<string, string>();
-    this.wordsMap.set('0', 'event');
-    this.wordsMap.set('1', 'apple');
-    this.wordsMap.set('2', 'watch');
+    this.wordsMap.set("0", "event");
+    this.wordsMap.set("1", "apple");
+    this.wordsMap.set("2", "watch");
   }
 
   getWord(): Promise<string> {
@@ -36,9 +36,9 @@ export class GameService {
 
       //if letter correct
       charCount[letter] -= 1;
-      rowData[index].classState = 'correct';
+      rowData[index].classState = "correct";
       if (charCount[letter] === 0) {
-        keyboardTile.classState = 'keyboard-tile correct';
+        keyboardTile.classState = "keyboard-tile correct";
       }
 
     }
@@ -58,19 +58,19 @@ export class GameService {
 
 
       //letter is not in the word
-      if (!word.includes(letter) || (charCount[letter] === 0 && rowData[index].classState !== 'correct')) {
-        rowData[index].classState = 'wrong';
-        if (keyboardTile.classState === 'keyboard-tile') {
-          keyboardTile.classState = 'keyboard-tile wrong';
+      if (!word.includes(letter) || (charCount[letter] === 0 && rowData[index].classState !== "correct")) {
+        rowData[index].classState = "wrong";
+        if (keyboardTile.classState === "keyboard-tile") {
+          keyboardTile.classState = "keyboard-tile wrong";
         }
         continue;
       }
 
       if (letter !== word[index]) {
         charCount[letter] -= 1;
-        if (!keyboardTile.classState.includes('correct'))
-          keyboardTile.classState = 'keyboard-tile exist';
-        rowData[index].classState = 'exist';//exist in the given word
+        if (!keyboardTile.classState.includes("correct"))
+          keyboardTile.classState = "keyboard-tile exist";
+        rowData[index].classState = "exist";//exist in the given word
       }
     }
 
@@ -100,12 +100,12 @@ export class GameService {
         }
       }
     }
-    return { classState: '', letter: "" }
+    return { classState: "", letter: "" };
   }
 
   //check if all the word are correct and in order
   private checkWin(rowData: gameTileType[], word: string): boolean {
-    const win = rowData.map(col => (col.letter)).join('');
+    const win = rowData.map(col => (col.letter)).join("");
     if (win === word) {
       return true;
     }
